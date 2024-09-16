@@ -1,0 +1,6 @@
+{
+	"dependencies": {
+		"@biomejs/biome": "^1.9.0",
+		"@types/gecko": "file:types-gecko-1.0.0.tgz"
+	}
+}

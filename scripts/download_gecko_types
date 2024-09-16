@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+ENDPOINT_PATH=/repos/mozilla/gecko-dev/contents/tools/@types
+TYPES_DIR=gecko_types
+
+mkdir -p "$TYPES_DIR"
+for i in $(gh api --jq '.[].name' "$ENDPOINT_PATH"); do
+	curl "$BASE_URL/$i" -o "$TYPES_DIR/$i"
+done
+
+cd "$TYPES_DIR"
+npm pack --pack-destination=..
