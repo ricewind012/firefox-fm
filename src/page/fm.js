@@ -1,6 +1,5 @@
 // Stolen from firefoxview.mjs
 // I guess some stuff is not ready for usage in other pages yet
-// TODO: ViewPage.exit() is not a function
 
 function onHashChange() {
 	let view = document.location?.hash.substring(1);

@@ -17,7 +17,7 @@ export class ViewDir extends ViewPage {
 
 	buttonsTemplate() {
 		const files = this.files.map(
-			(e) => html`<file-button path=${e.path}></file-button>`,
+			(e) => html`<file-row path=${e.path}></file-row>`,
 		);
 
 		// TODO: use virtualized-list when ready(?)
