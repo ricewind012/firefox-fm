@@ -1,4 +1,4 @@
 node_modules
 
-gecko_types
-types-gecko-1.0.0.tgz
+types
+*.tgz

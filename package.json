@@ -1,6 +1,7 @@
 {
 	"dependencies": {
 		"@biomejs/biome": "^1.9.0",
+		"@types/fx-autoconfig": "file:types-fx-autoconfig-1.0.0.tgz",
 		"@types/gecko": "file:types-gecko-1.0.0.tgz"
 	}
 }

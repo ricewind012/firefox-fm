@@ -1,0 +1,22 @@
+#!/bin/sh -e
+
+CURRENT_DIR=$PWD
+TYPES_PARENT_DIR=types
+
+download_pkg() {
+	base_url=https://raw.githubusercontent.com/$1/master/$2
+	endpoint_path=/repos/$1/contents/$2
+	types_dir=$TYPES_PARENT_DIR/${1##*/}
+
+	mkdir -p "$types_dir"
+	for i in $(gh api --jq '.[].name' "$endpoint_path"); do
+		curl -s -o "$types_dir/$i" "$base_url/$i"
+	done
+
+	cd "$types_dir"
+	npm "--pack-destination=$CURRENT_DIR" pack
+	cd "$CURRENT_DIR"
+}
+
+download_pkg mozilla/gecko-dev tools/@types
+download_pkg MrOtherGuy/fx-autoconfig types
