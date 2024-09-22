@@ -1,6 +1,5 @@
 import { html } from "chrome://global/content/vendor/lit.all.mjs";
 import { ViewPage } from "chrome://browser/content/firefoxview/viewpage.mjs";
-import "chrome://global/content/megalist/VirtualizedList.mjs";
 
 import { BASE_URL } from "../consts.js";
 import { getPathForName, newFile } from "../file-utils.js";

@@ -1,5 +1,4 @@
-import { html } from "chrome://global/content/vendor/lit.all.mjs";
-import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
+import { html, LitElement } from "chrome://global/content/vendor/lit.all.mjs";
 
 import { newFile } from "../file-utils.js";
 
@@ -21,7 +20,7 @@ class FileActions {
 	}
 }
 
-class FileRow extends MozLitElement {
+class FileRow extends LitElement {
 	get file() {
 		if (!this._file) {
 			this._file = newFile(this.path);
