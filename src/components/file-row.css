@@ -1,0 +1,11 @@
+:host {
+	gap: var(--space-small);
+	padding: var(--space-xsmall) var(--space-medium);
+
+	display: flex;
+}
+
+.file-icon {
+	width: var(--size-item-small);
+	height: var(--size-item-small);
+}

@@ -1,14 +1,14 @@
 import { html, LitElement } from "chrome://global/content/vendor/lit.all.mjs";
 
-import { newFile } from "../file-utils.js";
+import { BASE_URL } from "../consts.js";
+import { getFileExtension, newFile } from "../file-utils.js";
 
 /**
  * File actions wrapper class, maybe for future prompt usage...
- * @todo nsIFile.clone() doesn't work, so I have to create yet another copy...
  */
 class FileActions {
-	constructor(path) {
-		this.file = newFile(path);
+	constructor(file) {
+		this.file = file;
 	}
 
 	delete() {
@@ -39,12 +39,11 @@ class FileRow extends LitElement {
 		super.connectedCallback();
 		this.path = this.getAttribute("path");
 		// This has to be below the above line because of the file getter.
-		this.actions = new FileActions(this.path);
+		this.actions = new FileActions(this.file);
 	}
 
 	/**
 	 * @param {MouseEvent} ev
-	 * @todo <panel-list> doesn't work with <moz-button>
 	 */
 	onContextMenu(ev) {
 		ev.preventDefault();
@@ -68,13 +67,26 @@ class FileRow extends LitElement {
 	}
 
 	render() {
+		const basename = PathUtils.filename(this.path);
+		const extension = getFileExtension(this.path);
+		const icon = this.file.isFile()
+			? `moz-icon://.${extension}?size=16`
+			: "chrome://global/skin/icons/folder.svg";
+
 		return html`
-			<button
-				@click=${this.actions.open}
-				@contextmenu=${this.onContextMenu}
-			>
-				${PathUtils.filename(this.path)}
-			</button>
+			<link
+				rel="stylesheet"
+				href="${BASE_URL}/components/file-row.css"
+			/>
+
+			<moz-button
+				iconsrc="${icon}"
+				@dblclick=${this.actions.open}
+			>${basename}</moz-button>
+			<moz-button
+				iconsrc="chrome://global/skin/icons/more.svg"
+				@click=${this.onContextMenu}
+			></moz-button>
 
 			${this.panelListTemplate()}
 		`;

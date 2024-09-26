@@ -13,11 +13,19 @@ const userDirs = userDirsFile
 	}))
 	.reduce((a, b) => Object.assign(a, b));
 
-export function newFile(path) {
-	const file = Cc["@mozilla.org/file/local;1"].getService(Ci.nsIFile);
-	file.initWithPath(path);
+export const newFile = Components.Constructor(
+	"@mozilla.org/file/local;1",
+	"nsIFile",
+	"initWithPath",
+);
 
-	return file;
+export function getFileExtension(path) {
+	if (!path) {
+		return "";
+	}
+
+	const lastIndex = path.lastIndexOf(".");
+	return lastIndex !== -1 ? path.slice(lastIndex + 1).toLowerCase() : "";
 }
 
 export function getPathForName(name) {
