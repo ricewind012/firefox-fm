@@ -9,22 +9,26 @@ export class ViewDir extends ViewPage {
 		super();
 		this.name = this.getAttribute("name");
 		this.dirPath = getPathForName(this.name);
+		/** @todo Naming this `this.dir` makes it...undefined ? */
 		this.pDir = newFile(this.dirPath);
 		/** @type nsIFile[] */
 		this.files = [...this.pDir.directoryEntries];
 	}
 
 	buttonsTemplate() {
-		const files = this.files.map(
-			(e) => html`<file-row path=${e.path}></file-row>`,
+		return this.files.map(
+			(e) => html`
+				<file-row
+					.dir=${this.dirPath}
+					.file=${e}
+				></file-row>
+			`,
 		);
-
-		// TODO: use virtualized-list when ready(?)
-		return html`
-			${files}
-		`;
 	}
 
+	/**
+	 * @todo use virtualized-list when ready(?)
+	 */
 	render() {
 		return html`
 			<link

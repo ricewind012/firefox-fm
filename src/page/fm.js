@@ -17,14 +17,10 @@ function changeView(view) {
 function onViewsDeckViewChange() {
 	for (const child of viewsDeck.children) {
 		if (child.getAttribute("name") === viewsDeck.selectedViewName) {
-			try {
-				child.enter();
-			} catch (e) {}
+			child.enter();
 			activeComponent = child;
 		} else {
-			try {
-				child.exit();
-			} catch (e) {}
+			child.exit();
 		}
 	}
 }

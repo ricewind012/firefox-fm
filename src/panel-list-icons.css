@@ -1,0 +1,9 @@
+panel-item {
+	&[action="delete"]::part(button) {
+		background-image: url("chrome://global/skin/icons/delete.svg");
+	}
+
+	&[action="open"]::part(button) {
+		background-image: url("chrome://activity-stream/content/data/content/assets/glyph-open-file-16.svg");
+	}
+}
