@@ -1,25 +1,11 @@
-import { html } from "chrome://global/content/vendor/lit.all.mjs";
+import { html, when } from "chrome://global/content/vendor/lit.all.mjs";
 import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
+
+import { DownloadUtils } from "resource://gre/modules/DownloadUtils.sys.mjs";
 
 import { BASE_URL } from "../consts.js";
 import { getFileExtension } from "../file-utils.js";
-
-/**
- * File actions wrapper class, maybe for future prompt usage...
- */
-class FileActions {
-	constructor(file) {
-		this.file = file;
-	}
-
-	delete() {
-		this.file.remove(false);
-	}
-
-	open() {
-		this.file.launch();
-	}
-}
+import { FileActions } from "../file-actions.js";
 
 class FileRow extends MozLitElement {
 	static properties = {
@@ -28,13 +14,21 @@ class FileRow extends MozLitElement {
 	};
 
 	static queries = {
+		container: "#container",
 		menu: "panel-list",
 	};
 
 	connectedCallback() {
 		super.connectedCallback();
-		//this.file = newFile(this.path);
 		this.actions = new FileActions(this.file);
+	}
+
+	onClick() {
+		if (this.getAttribute("selected")) {
+			this.removeAttribute("selected");
+		} else {
+			this.setAttribute("selected", "");
+		}
 	}
 
 	/**
@@ -64,10 +58,14 @@ class FileRow extends MozLitElement {
 	}
 
 	render() {
-		const { path } = this.file;
-		const basename = PathUtils.filename(path);
+		const { displayName, fileSize, lastModifiedTime, path } = this.file;
+		const isFile = this.file.isFile();
+
+		const date = new Date(lastModifiedTime).toDateString();
+		const [bytes, unit] = DownloadUtils.convertByteUnits(fileSize);
+
 		const extension = getFileExtension(path);
-		const icon = this.file.isFile()
+		const icon = isFile
 			? `moz-icon://.${extension}?size=16`
 			: "chrome://global/skin/icons/folder.svg";
 
@@ -81,12 +79,21 @@ class FileRow extends MozLitElement {
 				href="${BASE_URL}/panel-list-icons.css"
 			/>
 
-			<moz-button
-				iconsrc="${icon}"
+			<div
+				id="container"
+				@click=${this.onClick}
 				@dblclick=${this.actions.open}
-			>${basename}</moz-button>
+			>
+				<img src="${icon}" />
+				<span>${displayName}</span>
+				<span>${date}</span>
+				<span>
+					${when(isFile, () => html`${bytes} ${unit}`)}
+				</span>
+			</div>
 			<moz-button
 				iconsrc="chrome://global/skin/icons/more.svg"
+				type="icon ghost"
 				@click=${this.onContextMenu}
 			></moz-button>
 
