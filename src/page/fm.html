@@ -28,7 +28,19 @@
     ></script>
     <script
       type="module"
+      src="chrome://userchrome/content/firefox-fm/src/components/input-label.js"
+    ></script>
+    <script
+      type="module"
+      src="chrome://userchrome/content/firefox-fm/src/components/pref-row.js"
+    ></script>
+    <script
+      type="module"
       src="chrome://userchrome/content/firefox-fm/src/components/view-dir.js"
+    ></script>
+    <script
+      type="module"
+      src="chrome://userchrome/content/firefox-fm/src/components/view-settings.js"
     ></script>
   </head>
 
@@ -75,17 +87,27 @@
       >
         File System
       </moz-page-nav-button>
+
+      <!-- TODO: is slot="secondary-nav" broken ? -->
+      <hr />
+      <moz-page-nav-button
+        view="settings"
+        iconSrc="chrome://browser/skin/preferences/category-general.svg"
+      >
+        Settings
+      </moz-page-nav-button>
     </moz-page-nav>
 
     <main class="main-container">
       <named-deck>
-        <view-dir type="page" name="root"></view-dir>
         <view-dir type="page" name="home"></view-dir>
         <view-dir type="page" name="documents"></view-dir>
         <view-dir type="page" name="downloads"></view-dir>
         <view-dir type="page" name="music"></view-dir>
         <view-dir type="page" name="pictures"></view-dir>
         <view-dir type="page" name="videos"></view-dir>
+        <view-dir type="page" name="root"></view-dir>
+        <view-settings type="page" name="settings"></view-settings>
       </named-deck>
     </main>
   </body>

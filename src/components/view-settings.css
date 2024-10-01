@@ -1,0 +1,5 @@
+:host {
+	gap: var(--space-xlarge);
+
+	display: grid;
+}
