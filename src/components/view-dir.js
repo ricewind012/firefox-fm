@@ -3,6 +3,7 @@ import { ViewPage } from "chrome://browser/content/firefoxview/viewpage.mjs";
 
 import { BASE_URL } from "../consts.js";
 import { getPathForName, newFile } from "../file-utils.js";
+import { PREF_DISPLAY_DIRS_FIRST } from "../prefs.js";
 
 export class ViewDir extends ViewPage {
 	constructor() {
@@ -16,7 +17,14 @@ export class ViewDir extends ViewPage {
 	}
 
 	buttonsTemplate() {
-		return this.files.map(
+		const files = Services.prefs.getBoolPref(PREF_DISPLAY_DIRS_FIRST)
+			? [
+					...this.files.filter((e) => e.isDirectory()),
+					...this.files.filter((e) => !e.isDirectory()),
+				]
+			: this.files;
+
+		return files.map(
 			(e) => html`
 				<file-row
 					.dir=${this.dirPath}
