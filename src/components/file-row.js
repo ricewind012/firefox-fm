@@ -21,6 +21,7 @@ class FileRow extends MozLitElement {
 	connectedCallback() {
 		super.connectedCallback();
 		this.actions = new FileActions(this.file);
+		this.selectedDeck = document.querySelector("view-dir[slot='selected']");
 	}
 
 	onClick() {
@@ -28,6 +29,14 @@ class FileRow extends MozLitElement {
 			this.removeAttribute("selected");
 		} else {
 			this.setAttribute("selected", "");
+		}
+	}
+
+	open() {
+		if (this.file.isFile()) {
+			this.actions.open();
+		} else {
+			this.selectedDeck.setAttribute("path", this.file.path);
 		}
 	}
 
@@ -45,7 +54,7 @@ class FileRow extends MozLitElement {
 				<panel-item
 					accesskey="O"
 					action="open"
-					@click=${this.actions.open}
+					@click=${this.open}
 				>Open</panel-item>
 				<hr />
 				<panel-item
@@ -82,7 +91,7 @@ class FileRow extends MozLitElement {
 			<div
 				id="container"
 				@click=${this.onClick}
-				@dblclick=${this.actions.open}
+				@dblclick=${this.open}
 			>
 				<img src="${icon}" />
 				<span>${displayName}</span>

@@ -6,14 +6,38 @@ import { getPathForName, newFile } from "../file-utils.js";
 import { PREF_DISPLAY_DIRS_FIRST } from "../prefs.js";
 
 export class ViewDir extends ViewPage {
+	static observedAttributes = [ViewPage.observedAttributes, "path"];
+
 	constructor() {
 		super();
 		this.name = this.getAttribute("name");
-		this.dirPath = getPathForName(this.name);
+		this.changePath();
+	}
+
+	/**
+	 * @param {string} path Dir path.
+	 */
+	changePath(path) {
+		this.dirPath = path || getPathForName(this.name);
 		/** @todo Naming this `this.dir` makes it...undefined ? */
 		this.pDir = newFile(this.dirPath);
 		/** @type nsIFile[] */
 		this.files = [...this.pDir.directoryEntries];
+
+		this.setAttribute("path", this.dirPath);
+	}
+
+	/**
+	 * @todo Maybe there is a better way for the first condition
+	 */
+	attributeChangedCallback(name, oldValue, newValue) {
+		if (oldValue === newValue) {
+			return;
+		}
+
+		super.attributeChangedCallback(name, oldValue, newValue);
+		this.changePath(newValue);
+		this.requestUpdate();
 	}
 
 	buttonsTemplate() {
