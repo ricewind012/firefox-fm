@@ -40,6 +40,20 @@ export class ViewDir extends ViewPage {
 		this.requestUpdate();
 	}
 
+	headerTemplate() {
+		return html`
+			<link
+				rel="stylesheet"
+				href="chrome://browser/content/firefoxview/firefoxview.css"
+			/>
+
+			<path-header
+				class="sticky-container bottom-fade"
+				.path=${this.dirPath}
+			></path-header>
+		`;
+	}
+
 	buttonsTemplate() {
 		const files = Services.prefs.getBoolPref(PREF_DISPLAY_DIRS_FIRST)
 			? [
@@ -68,6 +82,7 @@ export class ViewDir extends ViewPage {
 				href="${BASE_URL}/components/view-dir.css"
 			/>
 
+			${this.headerTemplate()}
 			${this.buttonsTemplate()}
 		`;
 	}
