@@ -4,7 +4,7 @@ import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 import { DownloadUtils } from "resource://gre/modules/DownloadUtils.sys.mjs";
 
 import { BASE_URL } from "../consts.js";
-import { getFileExtension } from "../file-utils.js";
+import { getFileExtension } from "../utils/file.js";
 import { FileActions } from "../file-actions.js";
 
 class FileRow extends MozLitElement {
@@ -22,14 +22,6 @@ class FileRow extends MozLitElement {
 		super.connectedCallback();
 		this.actions = new FileActions(this.file);
 		this.selectedDeck = document.querySelector("view-dir[slot='selected']");
-	}
-
-	onClick() {
-		if (this.getAttribute("selected")) {
-			this.removeAttribute("selected");
-		} else {
-			this.setAttribute("selected", "");
-		}
 	}
 
 	open() {
@@ -90,7 +82,7 @@ class FileRow extends MozLitElement {
 
 			<div
 				id="container"
-				@click=${this.onClick}
+				tabindex="0"
 				@dblclick=${this.open}
 			>
 				<img src="${icon}" />

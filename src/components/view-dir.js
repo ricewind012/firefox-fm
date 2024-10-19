@@ -2,7 +2,7 @@ import { html } from "chrome://global/content/vendor/lit.all.mjs";
 import { ViewPage } from "chrome://browser/content/firefoxview/viewpage.mjs";
 
 import { BASE_URL } from "../consts.js";
-import { getPathForName, newFile } from "../file-utils.js";
+import { getPathForName, newFile } from "../utils/file.js";
 import { PREF_DISPLAY_DIRS_FIRST } from "../prefs.js";
 
 export class ViewDir extends ViewPage {
@@ -40,6 +40,15 @@ export class ViewDir extends ViewPage {
 		this.requestUpdate();
 	}
 
+	/**
+	 * @param {Element} target
+	 */
+	selectRow(target) {
+		target.setAttribute("selected", "");
+		this.selectedRow?.removeAttribute("selected");
+		this.selectedRow = target;
+	}
+
 	headerTemplate() {
 		return html`
 			<link
@@ -54,7 +63,7 @@ export class ViewDir extends ViewPage {
 		`;
 	}
 
-	buttonsTemplate() {
+	rowsTemplate() {
 		const files = Services.prefs.getBoolPref(PREF_DISPLAY_DIRS_FIRST)
 			? [
 					...this.files.filter((e) => e.isDirectory()),
@@ -67,6 +76,7 @@ export class ViewDir extends ViewPage {
 				<file-row
 					.dir=${this.dirPath}
 					.file=${e}
+					@click=${(ev) => this.selectRow(ev.target)}
 				></file-row>
 			`,
 		);
@@ -83,7 +93,7 @@ export class ViewDir extends ViewPage {
 			/>
 
 			${this.headerTemplate()}
-			${this.buttonsTemplate()}
+			${this.rowsTemplate()}
 		`;
 	}
 }
