@@ -1,7 +1,11 @@
 #!/bin/sh -e
 
 CURRENT_DIR=$PWD
-TYPES_PARENT_DIR=types
+TYPES_PARENT_DIR=external_types
+
+pack() {
+	npm --pack-destination=/tmp pack
+}
 
 download_pkg() {
 	base_url=https://raw.githubusercontent.com/$1/master/$2
@@ -9,12 +13,21 @@ download_pkg() {
 	types_dir=$TYPES_PARENT_DIR/${1##*/}
 
 	mkdir -p "$types_dir"
+	cd "$types_dir"
+
 	for i in $(gh api --jq '.[].name' "$endpoint_path"); do
-		curl -s -o "$types_dir/$i" "$base_url/$i"
+		curl -s -o "$i" "$base_url/$i"
 	done
 
-	cd "$types_dir"
-	npm "--pack-destination=$CURRENT_DIR" pack
+	if ! pack; then
+		# wtf?
+		path=package.json
+		c=$(cat "$path")
+
+		printf '{ "name": "@types/gecko", "version": "1.0.0", %s' "${c#'{'}" > "$path"
+		pack
+	fi
+
 	cd "$CURRENT_DIR"
 }
 
