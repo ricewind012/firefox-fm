@@ -1,12 +1,20 @@
 import { html } from "chrome://global/content/vendor/lit.all.mjs";
+import { customElement } from "lit/decorators.js";
 import { ViewPage } from "chrome://browser/content/firefoxview/viewpage.mjs";
 
 import { BASE_URL } from "../consts.js";
 import { getPathForName, newFile } from "../utils/file.js";
 import { PREF_DISPLAY_DIRS_FIRST } from "../prefs.js";
 
+@customElement("view-dir")
 export class ViewDir extends ViewPage {
-	static observedAttributes = [ViewPage.observedAttributes, "path"];
+	dirPath: string;
+	files: nsIFile[];
+	name: string;
+	pDir: nsIFile;
+	selectedRow: Element;
+
+	static observedAttributes = [...ViewPage.observedAttributes, "path"];
 
 	constructor() {
 		super();
@@ -15,13 +23,12 @@ export class ViewDir extends ViewPage {
 	}
 
 	/**
-	 * @param {string} path Dir path.
+	 * @param path Dir path.
 	 */
-	changePath(path) {
+	changePath(path?: string) {
 		this.dirPath = path || getPathForName(this.name);
 		/** @todo Naming this `this.dir` makes it...undefined ? */
 		this.pDir = newFile(this.dirPath);
-		/** @type nsIFile[] */
 		this.files = [...this.pDir.directoryEntries];
 
 		this.setAttribute("path", this.dirPath);
@@ -40,10 +47,7 @@ export class ViewDir extends ViewPage {
 		this.requestUpdate();
 	}
 
-	/**
-	 * @param {Element} target
-	 */
-	selectRow(target) {
+	selectRow(target: Element) {
 		target.setAttribute("selected", "");
 		this.selectedRow?.removeAttribute("selected");
 		this.selectedRow = target;
@@ -87,15 +91,9 @@ export class ViewDir extends ViewPage {
 	 */
 	render() {
 		return html`
-			<link
-				rel="stylesheet"
-				href="${BASE_URL}/components/view-dir.css"
-			/>
+			<link rel="stylesheet" href="${BASE_URL}/components/view-dir.css" />
 
-			${this.headerTemplate()}
-			${this.rowsTemplate()}
+			${this.headerTemplate()} ${this.rowsTemplate()}
 		`;
 	}
 }
-
-customElements.define("view-dir", ViewDir);

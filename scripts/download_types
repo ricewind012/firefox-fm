@@ -1,12 +1,22 @@
 #!/bin/sh -e
+#
+# Download and install private types that are needed for TypeScript compilation.
 
 CURRENT_DIR=$PWD
 TYPES_PARENT_DIR=external_types
+FILES_BASE='
+	index.d.ts
+	package.json
+	tsconfig.json
+'
 
 pack() {
-	npm --pack-destination=/tmp pack
+	npm --pack-destination="$CURRENT_DIR" pack
 }
 
+# arg 1 - "owner/name" repo
+# arg 2 - path
+# arg 3 - array of files to download
 download_pkg() {
 	base_url=https://raw.githubusercontent.com/$1/master/$2
 	endpoint_path=/repos/$1/contents/$2
@@ -15,7 +25,10 @@ download_pkg() {
 	mkdir -p "$types_dir"
 	cd "$types_dir"
 
-	for i in $(gh api --jq '.[].name' "$endpoint_path"); do
+	for i in $3; do
+		case $i in */*)
+			mkdir -p "${i%/*}"
+		esac
 		curl -s -o "$i" "$base_url/$i"
 	done
 
@@ -31,5 +44,31 @@ download_pkg() {
 	cd "$CURRENT_DIR"
 }
 
-download_pkg mozilla/gecko-dev tools/@types
-download_pkg MrOtherGuy/fx-autoconfig types
+download_pkg mozilla-firefox/firefox tools/@types "
+	$FILES_BASE
+	generated/lib.gecko.darwin.d.ts
+	generated/lib.gecko.dom.d.ts
+	generated/lib.gecko.glean.d.ts
+	generated/lib.gecko.linux.d.ts
+	generated/lib.gecko.modules.d.ts
+	generated/lib.gecko.nsresult.d.ts
+	generated/lib.gecko.services.d.ts
+	generated/lib.gecko.win32.d.ts
+	generated/lib.gecko.xpcom.d.ts
+	generated/tspaths.json
+	lib.gecko.custom.d.ts
+	lib.gecko.tweaks.d.ts
+	lib.gecko.xpidl.d.ts
+"
+
+download_pkg MrOtherGuy/fx-autoconfig types "
+	$FILES_BASE
+	api/FileSystem.d.ts
+	api/Hotkeys.d.ts
+	api/Notifications.d.ts
+	api/Prefs.d.ts
+	api/Runtime.d.ts
+	api/Scripts.d.ts
+	api/Utils.d.ts
+	api/Windows.d.ts
+"

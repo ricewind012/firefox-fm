@@ -1,27 +1,33 @@
 {
 	"compilerOptions": {
-		"noEmit": true,
-		"target": "ESNext",
-		"allowJs": true,
+		// TODO: https://www.typescriptlang.org/docs/handbook/declaration-files/dts-from-js.html
+		//"declaration": true,
+		//"declarationMap": true,
+		//"emitDeclarationOnly": true,
+		"experimentalDecorators": true,
+		"skipLibCheck": true,
+		"module": "esnext",
+		"moduleResolution": "node",
+		"target": "esnext",
+		"outDir": "dist",
 		"paths": {
-			"chrome://browser/content/firefoxview/viewpage.mjs": [
-				"./types/viewpage.d.ts"
-			],
-			// TODO: this is only lit-html, but does that actually work here ?
 			"chrome://global/content/vendor/lit.all.mjs": [
-				"./node_modules/lit-html/lit-html.d.ts",
-				"./node_modules/lit-html/directives/when.d.ts"
+				"./node_modules/lit/index.js"
 			],
-			// TODO: useless ? doesn't work anyway LEL
-			"chrome://global/content/lit-utils.mjs": ["./types/lit-utils.d.ts"],
 			"chrome://userchromejs/content/uc_api.sys.mjs": [
 				"./node_modules/@types/fx-autoconfig/index.d.ts"
 			],
-
-			// TODO: generate types for all firefox stuff
 			"resource://gre/modules/DownloadUtils.sys.mjs": [
 				"./types/DownloadUtils.d.ts"
 			]
-		}
-	}
+		},
+		"plugins": [
+			{
+				"name": "ts-lit-plugin",
+				"strict": true
+			}
+		]
+	},
+	"include": ["src"],
+	"exclude": ["node_modules"]
 }

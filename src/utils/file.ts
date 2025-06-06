@@ -4,7 +4,7 @@ const configDir =
 const userDirsFile = await IOUtils.readUTF8(
 	PathUtils.join(configDir, "user-dirs.dirs"),
 );
-const userDirs = userDirsFile
+const userDirs: Record<string, string> = userDirsFile
 	.split("\n")
 	.filter((e) => e && !e.startsWith("#"))
 	.map((e) => e.split("="))
@@ -19,7 +19,7 @@ export const newFile = Components.Constructor(
 	"initWithPath",
 );
 
-export function getFileExtension(path) {
+export function getFileExtension(path: string) {
 	if (!path) {
 		return "";
 	}
@@ -28,7 +28,7 @@ export function getFileExtension(path) {
 	return lastIndex !== -1 ? path.slice(lastIndex + 1).toLowerCase() : "";
 }
 
-export function getPathForName(name) {
+export function getPathForName(name: string) {
 	switch (name) {
 		case "home":
 			return homeDir;

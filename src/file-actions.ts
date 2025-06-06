@@ -2,7 +2,9 @@
  * File actions wrapper class, maybe for future prompt usage...
  */
 export class FileActions {
-	constructor(file) {
+	file: nsIFile;
+
+	constructor(file: nsIFile) {
 		this.file = file;
 	}
 

@@ -1,124 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src resource: chrome:; object-src 'none'; img-src moz-icon: data: chrome:;"
-    />
-    <meta name="color-scheme" content="light dark" />
-    <title>File Manager</title>
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			http-equiv="Content-Security-Policy"
+			content="default-src resource: chrome:; script-src chrome: file: 'unsafe-inline'; object-src 'none'; img-src moz-icon: data: chrome:;"
+		/>
+		<meta name="color-scheme" content="light dark" />
+		<title>File Manager</title>
 
-    <link
-      rel="stylesheet"
-      href="chrome://browser/content/firefoxview/firefoxview.css"
-    />
-    <link
-      rel="stylesheet"
-      href="chrome://userchrome/content/firefox-fm/src/page/fm.css"
-    />
+		<link
+			rel="stylesheet"
+			href="chrome://userchrome/content/firefox-fm/src/page/fm.css"
+		/>
+	</head>
 
-    <script
-      type="module"
-      src="chrome://global/content/elements/moz-page-nav.mjs"
-    ></script>
-    <script
-      type="module"
-      src="chrome://userchrome/content/firefox-fm/src/components/path-header.js"
-    ></script>
-    <script
-      type="module"
-      src="chrome://userchrome/content/firefox-fm/src/components/file-row.js"
-    ></script>
-    <script
-      type="module"
-      src="chrome://userchrome/content/firefox-fm/src/components/input-label.js"
-    ></script>
-    <script
-      type="module"
-      src="chrome://userchrome/content/firefox-fm/src/components/pref-row.js"
-    ></script>
-    <script
-      type="module"
-      src="chrome://userchrome/content/firefox-fm/src/components/view-dir.js"
-    ></script>
-    <script
-      type="module"
-      src="chrome://userchrome/content/firefox-fm/src/components/view-settings.js"
-    ></script>
-  </head>
+	<body>
+		<fm-sidebar></fm-sidebar>
+	</body>
 
-  <body>
-    <moz-page-nav heading="File Manager">
-      <moz-page-nav-button view="home" iconSrc="chrome://browser/skin/home.svg">
-        Home
-      </moz-page-nav-button>
-      <moz-page-nav-button
-        view="documents"
-        iconSrc="chrome://global/skin/icons/folder.svg"
-      >
-        Documents
-      </moz-page-nav-button>
-      <moz-page-nav-button
-        view="downloads"
-        iconSrc="chrome://browser/skin/downloads/downloads.svg"
-      >
-        Downloads
-      </moz-page-nav-button>
-      <moz-page-nav-button
-        view="music"
-        iconSrc="chrome://global/skin/media/audio.svg"
-      >
-        Music
-      </moz-page-nav-button>
-      <!-- TODO: this is the only somewhat fitting image -->
-      <moz-page-nav-button
-        view="pictures"
-        iconSrc="resource://gre-resources/password.svg"
-      >
-        Pictures
-      </moz-page-nav-button>
-      <moz-page-nav-button
-        view="videos"
-        iconSrc="chrome://browser/skin/notification-icons/camera.svg"
-      >
-        Videos
-      </moz-page-nav-button>
-      <hr />
-      <moz-page-nav-button
-        view="root"
-        iconSrc="chrome://browser/skin/device-desktop.svg"
-      >
-        File System
-      </moz-page-nav-button>
-
-      <!-- TODO: is slot="secondary-nav" broken ? -->
-      <hr />
-      <moz-page-nav-button
-        view="settings"
-        iconSrc="chrome://browser/skin/preferences/category-general.svg"
-      >
-        Settings
-      </moz-page-nav-button>
-    </moz-page-nav>
-
-    <main class="main-container">
-      <named-deck>
-        <view-dir type="page" name="home"></view-dir>
-        <view-dir type="page" name="documents"></view-dir>
-        <view-dir type="page" name="downloads"></view-dir>
-        <view-dir type="page" name="music"></view-dir>
-        <view-dir type="page" name="pictures"></view-dir>
-        <view-dir type="page" name="videos"></view-dir>
-        <view-dir type="page" name="root"></view-dir>
-        <view-settings type="page" name="settings"></view-settings>
-      </named-deck>
-    </main>
-  </body>
-
-  <script src="chrome://userchrome/content/firefox-fm/src/page/fm.js"></script>
-  <script
-    type="module"
-    src="chrome://userchrome/content/firefox-fm/src/page/keyboard-nav.js"
-  ></script>
+	<script type="importmap">
+		{
+			"imports": {
+				"lit": "chrome://userchrome/content/firefox-fm/node_modules/lit/index.js",
+				"lit-element/lit-element.js": "chrome://userchrome/content/firefox-fm/node_modules/lit-element/lit-element.js",
+				"lit-html": "chrome://userchrome/content/firefox-fm/node_modules/lit-html/lit-html.js",
+				"lit-html/is-server.js": "chrome://userchrome/content/firefox-fm/node_modules/lit-html/is-server.js",
+				"lit/decorators.js": "chrome://userchrome/content/firefox-fm/node_modules/lit/decorators.js",
+				"@lit/reactive-element": "chrome://userchrome/content/firefox-fm/node_modules/@lit/reactive-element/reactive-element.js",
+				"@lit/reactive-element/decorators/custom-element.js": "chrome://userchrome/content/firefox-fm/node_modules/@lit/reactive-element/decorators/custom-element.js",
+				"@lit/reactive-element/decorators/event-options.js": "chrome://userchrome/content/firefox-fm/node_modules/@lit/reactive-element/decorators/event-options.js",
+				"@lit/reactive-element/decorators/property.js": "chrome://userchrome/content/firefox-fm/node_modules/@lit/reactive-element/decorators/property.js",
+				"@lit/reactive-element/decorators/query.js": "chrome://userchrome/content/firefox-fm/node_modules/@lit/reactive-element/decorators/query.js",
+				"@lit/reactive-element/decorators/query-all.js": "chrome://userchrome/content/firefox-fm/node_modules/@lit/reactive-element/decorators/query-all.js",
+				"@lit/reactive-element/decorators/query-assigned-elements.js": "chrome://userchrome/content/firefox-fm/node_modules/@lit/reactive-element/decorators/query-assigned-elements.js",
+				"@lit/reactive-element/decorators/query-assigned-nodes.js": "chrome://userchrome/content/firefox-fm/node_modules/@lit/reactive-element/decorators/query-assigned-nodes.js",
+				"@lit/reactive-element/decorators/query-async.js": "chrome://userchrome/content/firefox-fm/node_modules/@lit/reactive-element/decorators/query-async.js",
+				"@lit/reactive-element/decorators/state.js": "chrome://userchrome/content/firefox-fm/node_modules/@lit/reactive-element/decorators/state.js"
+			}
+		}
+	</script>
+	<script
+		type="module"
+		src="chrome://userchrome/content/firefox-fm/dist/fm.js"
+	></script>
 </html>

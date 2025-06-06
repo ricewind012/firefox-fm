@@ -5,14 +5,16 @@
 // @include      main
 // ==/UserScript==
 
+// TODO: ts rewrite
+
 import { Hotkeys, Utils } from "chrome://userchromejs/content/uc_api.sys.mjs";
 
 const registrar = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
 const chromeRegistry = Cc["@mozilla.org/chrome/chrome-registry;1"].getService(
-	Ci.nsIChromeRegistry,
+	Ci.nsIChromeRegistry
 );
 const fphs = Cc["@mozilla.org/network/protocol;1?name=file"].getService(
-	Ci.nsIFileProtocolHandler,
+	Ci.nsIFileProtocolHandler
 );
 
 function findResources() {
@@ -74,7 +76,7 @@ if (aboutFm.urlString) {
 		generateFreeCID(),
 		AboutFM.ABOUT_URL,
 		"@mozilla.org/network/protocol/about;1?what=fm",
-		AboutModuleFactory,
+		AboutModuleFactory
 	);
 }
 

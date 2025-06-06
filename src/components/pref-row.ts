@@ -1,18 +1,17 @@
-import { html } from "chrome://global/content/vendor/lit.all.mjs";
-import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
 import * as UC_API from "chrome://userchromejs/content/uc_api.sys.mjs";
 
 const { PREF_BOOL, PREF_INT, PREF_STRING } = Services.prefs;
 
-class PrefRow extends MozLitElement {
-	static properties = {
-		label: { type: String },
-		description: { type: String },
-		pref: { type: String },
-		type: { type: Number },
-	};
+@customElement("pref-row")
+class PrefRow extends LitElement {
+	@property({ type: String }) label = "";
+	@property({ type: String }) description = "";
+	@property({ type: String }) pref = "";
+	@property({ type: Number }) type = -1;
 
-	buildOnChange(pref, type) {
+	buildOnChange(pref: string, type: number) {
 		const key = (() => {
 			switch (type) {
 				case PREF_BOOL:
@@ -46,13 +45,8 @@ class PrefRow extends MozLitElement {
 			case PREF_INT:
 			case PREF_STRING:
 				return html`
-					<input-label
-						label=${this.label}
-						@change=${onChange}
-					></input-label>
+					<input-label label=${this.label} @change=${onChange}></input-label>
 				`;
 		}
 	}
 }
-
-customElements.define("pref-row", PrefRow);

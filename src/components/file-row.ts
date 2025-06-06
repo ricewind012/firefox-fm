@@ -1,5 +1,5 @@
-import { html, when } from "chrome://global/content/vendor/lit.all.mjs";
-import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
 
 import { DownloadUtils } from "resource://gre/modules/DownloadUtils.sys.mjs";
 
@@ -7,11 +7,16 @@ import { BASE_URL } from "../consts.js";
 import { getFileExtension } from "../utils/file.js";
 import { FileActions } from "../file-actions.js";
 
-class FileRow extends MozLitElement {
-	static properties = {
-		file: { type: Object },
-		dir: { type: String },
+@customElement("file-row")
+class FileRow extends LitElement {
+	actions: FileActions;
+	menu: {
+		toggle(ev: MouseEvent): void;
 	};
+	selectedDeck: HTMLElement;
+
+	@property({ type: Object }) file: nsIFile = null;
+	@property({ type: String }) dir = "";
 
 	static queries = {
 		container: "#container",
@@ -32,10 +37,7 @@ class FileRow extends MozLitElement {
 		}
 	}
 
-	/**
-	 * @param {MouseEvent} ev
-	 */
-	onContextMenu(ev) {
+	onContextMenu(ev: MouseEvent) {
 		ev.preventDefault();
 		this.menu.toggle(ev);
 	}
@@ -43,17 +45,13 @@ class FileRow extends MozLitElement {
 	panelListTemplate() {
 		return html`
 			<panel-list>
-				<panel-item
-					accesskey="O"
-					action="open"
-					@click=${this.open}
-				>Open</panel-item>
+				<panel-item accesskey="O" action="open" @click=${this.open}>
+					Open
+				</panel-item>
 				<hr />
-				<panel-item
-					accesskey="D"
-					action="delete"
-					@click=${this.actions.delete}
-				>Delete</panel-item>
+				<panel-item accesskey="D" action="delete" @click=${this.actions.delete}>
+					Delete
+				</panel-item>
 			</panel-list>
 		`;
 	}
@@ -71,25 +69,18 @@ class FileRow extends MozLitElement {
 			: "chrome://global/skin/icons/folder.svg";
 
 		return html`
-			<link
-				rel="stylesheet"
-				href="${BASE_URL}/components/file-row.css"
-			/>
-			<link
-				rel="stylesheet"
-				href="${BASE_URL}/panel-list-icons.css"
-			/>
+			<link rel="stylesheet" href="${BASE_URL}/components/file-row.css" />
+			<link rel="stylesheet" href="${BASE_URL}/panel-list-icons.css" />
 
-			<div
-				id="container"
-				tabindex="0"
-				@dblclick=${this.open}
-			>
+			<div id="container" tabindex="0" @dblclick=${this.open}>
 				<img src="${icon}" />
 				<span>${displayName}</span>
 				<span>${date}</span>
 				<span>
-					${when(isFile, () => html`${bytes} ${unit}`)}
+					${isFile &&
+					html`
+						${bytes} ${unit}
+					`}
 				</span>
 			</div>
 			<moz-button
@@ -102,5 +93,3 @@ class FileRow extends MozLitElement {
 		`;
 	}
 }
-
-customElements.define("file-row", FileRow);

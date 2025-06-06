@@ -1,3 +1,22 @@
-moz-page-nav hr {
-	width: 100%;
+body {
+	margin: 0;
+
+	display: flex;
+	height: 100vh;
+}
+
+fm-sidebar {
+	display: flex;
+	flex-direction: column;
+}
+
+fm-sidebar-item {
+	gap: 8px;
+	padding: 4px 8px;
+
+	display: flex;
+}
+
+fm-content {
+	flex: 1;
 }
