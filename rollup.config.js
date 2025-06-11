@@ -27,6 +27,13 @@ export default {
 	output: {
 		dir: "dist",
 	},
-	external: ["lit", "lit/decorators"],
-	plugins: [del({ targets: ["dist"] }), typescript()],
+	// TODO: maybe use firefox import
+	//external: ["lit", "lit/decorators"],
+	plugins: [
+		del({ targets: ["dist"] }),
+		typescript(),
+		nodeResolve({
+			exportConditions: ["development"],
+		}),
+	],
 };

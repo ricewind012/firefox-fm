@@ -12,7 +12,4 @@
 
 Building is a simple `npm i && npm run build`.
 
-This uses React instead of Lit because:
-
-1. In chrome:// URIs it's unusable because of this warning: `Removed unsafe attribute. Element: div. Attribute: iconurl$lit$.`.
-2. Fluent support.
+The only patch for lit is based on [this one from Mozilla](https://searchfox.org/mozilla-central/source/toolkit/content/vendor/lit/0002-use-DOMParser-not-innerHTML.patch).

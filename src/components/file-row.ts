@@ -1,27 +1,31 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { html } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
 
 import { DownloadUtils } from "resource://gre/modules/DownloadUtils.sys.mjs";
 
-import { BASE_URL } from "../consts.js";
-import { getFileExtension } from "../utils/file.js";
-import { FileActions } from "../file-actions.js";
+import { getFileExtension } from "../utils/file";
+import { CBaseElement } from "../utils/lit.js";
+import type { ClickEvent } from "../utils/types";
+
+import { ContextMenu } from "./context-menu";
+import { FileActions } from "../file-actions";
+
+declare global {
+	interface HTMLElementTagNameMap {
+		"file-row": FileRow;
+	}
+}
 
 @customElement("file-row")
-class FileRow extends LitElement {
+class FileRow extends CBaseElement {
 	actions: FileActions;
-	menu: {
-		toggle(ev: MouseEvent): void;
-	};
 	selectedDeck: HTMLElement;
 
 	@property({ type: Object }) file: nsIFile = null;
 	@property({ type: String }) dir = "";
 
-	static queries = {
-		container: "#container",
-		menu: "panel-list",
-	};
+	@query("#container", true) container: HTMLDivElement;
+	@query("context-menu", true) menu: HTMLElement;
 
 	connectedCallback() {
 		super.connectedCallback();
@@ -37,22 +41,20 @@ class FileRow extends LitElement {
 		}
 	}
 
-	onContextMenu(ev: MouseEvent) {
+	onContextMenu(ev: ClickEvent) {
 		ev.preventDefault();
-		this.menu.toggle(ev);
+		ContextMenu.show(ev, this.contextMenuTemplate());
 	}
 
-	panelListTemplate() {
+	contextMenuTemplate() {
 		return html`
-			<panel-list>
-				<panel-item accesskey="O" action="open" @click=${this.open}>
-					Open
-				</panel-item>
-				<hr />
-				<panel-item accesskey="D" action="delete" @click=${this.actions.delete}>
+			<context-menu>
+				<context-menu-item @click=${this.open}>Open</context-menu-item>
+				<context-menu-separator></context-menu-separator>
+				<context-menu-item @click=${this.actions.delete}>
 					Delete
-				</panel-item>
-			</panel-list>
+				</context-menu-item>
+			</context-menu>
 		`;
 	}
 
@@ -69,9 +71,6 @@ class FileRow extends LitElement {
 			: "chrome://global/skin/icons/folder.svg";
 
 		return html`
-			<link rel="stylesheet" href="${BASE_URL}/components/file-row.css" />
-			<link rel="stylesheet" href="${BASE_URL}/panel-list-icons.css" />
-
 			<div id="container" tabindex="0" @dblclick=${this.open}>
 				<img src="${icon}" />
 				<span>${displayName}</span>
@@ -83,13 +82,13 @@ class FileRow extends LitElement {
 					`}
 				</span>
 			</div>
-			<moz-button
+			<button
 				iconsrc="chrome://global/skin/icons/more.svg"
 				type="icon ghost"
 				@click=${this.onContextMenu}
-			></moz-button>
+			></button>
 
-			${this.panelListTemplate()}
+			${this.contextMenuTemplate()}
 		`;
 	}
 }

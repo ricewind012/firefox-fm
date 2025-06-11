@@ -5,29 +5,18 @@
 		//"declarationMap": true,
 		//"emitDeclarationOnly": true,
 		"experimentalDecorators": true,
-		"skipLibCheck": true,
+		"useDefineForClassFields": false,
+		"target": "esnext",
 		"module": "esnext",
 		"moduleResolution": "node",
-		"target": "esnext",
 		"outDir": "dist",
 		"paths": {
-			"chrome://global/content/vendor/lit.all.mjs": [
-				"./node_modules/lit/index.js"
-			],
 			"chrome://userchromejs/content/uc_api.sys.mjs": [
 				"./node_modules/@types/fx-autoconfig/index.d.ts"
 			],
 			"resource://gre/modules/DownloadUtils.sys.mjs": [
 				"./types/DownloadUtils.d.ts"
 			]
-		},
-		"plugins": [
-			{
-				"name": "ts-lit-plugin",
-				"strict": true
-			}
-		]
-	},
-	"include": ["src"],
-	"exclude": ["node_modules"]
+		}
+	}
 }

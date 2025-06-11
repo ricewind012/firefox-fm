@@ -1,0 +1,9 @@
+fm-path-header {
+	gap: var(--spacing-05x);
+	/* TODO: temp */
+	margin-bottom: 5%;
+}
+
+fm-tab {
+	flex-direction: column;
+}

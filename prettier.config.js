@@ -1,5 +1,5 @@
 /** @type {import("prettier").Config} */
 export default {
-  htmlWhitespaceSensitivity: "ignore",
-  useTabs: true,
+	htmlWhitespaceSensitivity: "ignore",
+	useTabs: true,
 };

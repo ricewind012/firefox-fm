@@ -1,60 +1,49 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { html } from "lit";
+import { customElement } from "lit/decorators.js";
 
-const ITEMS_FOR_NOW: {
-	name: string;
-	iconURL: string;
-}[] = [
-	{ name: "home", iconURL: "chrome://browser/skin/home.svg" },
-	{ name: "documents", iconURL: "chrome://global/skin/icons/folder.svg" },
-	{
-		name: "downloads",
-		iconURL: "chrome://browser/skin/downloads/downloads.svg",
-	},
-	{ name: "music", iconURL: "chrome://global/skin/media/audio.svg" },
-	{ name: "pictures", iconURL: "resource://gre-resources/password.svg" },
-	{
-		name: "videos",
-		iconURL: "chrome://browser/skin/notification-icons/camera.svg",
-	},
-	{ name: "root", iconURL: "chrome://browser/skin/device-desktop.svg" },
-	{
-		name: "settings",
-		iconURL: "chrome://browser/skin/preferences/category-general.svg",
-	},
-];
+import { getPathForName } from "../utils/file";
+import { CBaseElement } from "../utils/lit";
+import type { TabItem } from "../components/content";
 
-@customElement("fm-sidebar-item")
-class SidebarItem extends LitElement {
-	@property({ type: String }) name = "";
-	@property({ type: String }) iconURL = "";
-
-	render() {
-		return html`
-			<img src=${this.iconURL} />
-			${this.name}
-		`;
-	}
-}
-
-@customElement("fm-sidebar")
-class Sidebar extends LitElement {
-	render() {
-		const items = ITEMS_FOR_NOW.map(
-			(item) => html`
-				<div name=${item.name} iconURL=${item.iconURL}></div>
-			`,
-		);
-
-		return html`
-			${items}
-		`;
-	}
-}
+import "../components/content";
+import "../components/context-menu";
+import "../components/shared";
+import "../components/sidebar";
 
 declare global {
 	interface HTMLElementTagNameMap {
-		"fm-sidebar": Sidebar;
-		"fm-sidebar-item": SidebarItem;
+		"fm-app": App;
+	}
+}
+
+const vecTopItems: TabItem[] = [
+	{ name: "home", text: "Home" },
+	{ name: "documents", text: "Documents" },
+	{ name: "downloads", text: "Downloads" },
+	{ name: "music", text: "Music" },
+	{ name: "pictures", text: "Pictures" },
+	{ name: "videos", text: "Videos" },
+	{ name: "root", text: "File System" },
+];
+const vecBottomItems: TabItem[] = [{ name: "settings", text: "Settings" }];
+const vecAllTabs = [...vecTopItems, ...vecBottomItems];
+
+@customElement("fm-app")
+class App extends CBaseElement {
+	render() {
+		const DEFAULT_TAB = "home";
+		const path = getPathForName(DEFAULT_TAB);
+		console.log(path);
+
+		return html`
+			<fm-sidebar
+				.topItems=${vecTopItems}
+				.bottomItems=${vecBottomItems}
+			></fm-sidebar>
+			<fm-content>
+				<fm-path-header .path=${path}></fm-path-header>
+				<fm-tabs selectedTab=${DEFAULT_TAB} .tabs=${vecAllTabs}></fm-tabs>
+			</fm-content>
+		`;
 	}
 }

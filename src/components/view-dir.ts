@@ -1,20 +1,21 @@
-import { html } from "chrome://global/content/vendor/lit.all.mjs";
+import { html } from "lit";
 import { customElement } from "lit/decorators.js";
-import { ViewPage } from "chrome://browser/content/firefoxview/viewpage.mjs";
+import { Tab } from "./content.js";
 
 import { BASE_URL } from "../consts.js";
 import { getPathForName, newFile } from "../utils/file.js";
 import { PREF_DISPLAY_DIRS_FIRST } from "../prefs.js";
 
+// TODO this whole thing
 @customElement("view-dir")
-export class ViewDir extends ViewPage {
+export class ViewDir extends Tab {
 	dirPath: string;
 	files: nsIFile[];
 	name: string;
 	pDir: nsIFile;
 	selectedRow: Element;
 
-	static observedAttributes = [...ViewPage.observedAttributes, "path"];
+	static observedAttributes = [...Tab.observedAttributes, "path"];
 
 	constructor() {
 		super();
@@ -26,7 +27,7 @@ export class ViewDir extends ViewPage {
 	 * @param path Dir path.
 	 */
 	changePath(path?: string) {
-		this.dirPath = path || getPathForName(this.name);
+		this.dirPath = path || getPathForName(this.name as UserDir_t);
 		/** @todo Naming this `this.dir` makes it...undefined ? */
 		this.pDir = newFile(this.dirPath);
 		this.files = [...this.pDir.directoryEntries];

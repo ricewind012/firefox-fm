@@ -1,0 +1,44 @@
+fm-sidebar {
+	background-color: var(--fg);
+	color: var(--bg);
+	gap: var(--spacing-1x);
+	padding-block: var(--spacing-2x);
+	padding-inline: var(--spacing-3x);
+
+	flex-direction: column;
+}
+
+fm-sidebar-item {
+	--color-hover: color-mix(in srgb, currentColor 10%, transparent);
+	--color-selected: color-mix(in srgb, currentColor 25%, transparent);
+	--selected-color: AccentColor;
+	--selected-line-size: 4px;
+
+	gap: var(--spacing-1x);
+	padding-block: var(--spacing-1x);
+	/*padding-inline: calc(var(--selected-line-size) + var(--spacing-2x));*/
+	padding-inline: var(--spacing-2x);
+
+	align-items: center;
+
+	&[selected] {
+		background-color: var(--color-selected);
+		color: var(--selected-color);
+		/*box-shadow: calc(var(--selected-line-size) * -1) 0;*/
+
+		--selected-offset: 4px;
+		box-shadow: var(--selected-offset) var(--selected-offset) var(--color-hover);
+	}
+
+	&:not([selected]):hover {
+		background-color: var(--color-hover);
+	}
+
+	&:not([selected]):active {
+		background-color: var(--color-selected);
+	}
+}
+
+fm-sidebar-spacer {
+	flex: 1;
+}

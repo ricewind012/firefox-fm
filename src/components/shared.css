@@ -1,0 +1,19 @@
+fm-icon {
+	/* Can't go above 16px. Weird, isn't -symbolic svg ? */
+	--icon-size: 16px;
+
+	background-image: var(--icon);
+	background-size: var(--icon-size);
+
+	flex-shrink: 0;
+	width: var(--icon-size);
+	height: var(--icon-size);
+}
+
+fm-text {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	user-select: none;
+}
