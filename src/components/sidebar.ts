@@ -1,8 +1,8 @@
 import { html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 
 import type { TabItem } from "./content";
-import { ContextMenu } from "./context-menu";
+import type { ContextMenu } from "./context-menu";
 
 import { CBaseElement } from "../utils/lit";
 import type { ClickEvent } from "../utils/types";
@@ -35,6 +35,8 @@ class Sidebar extends CBaseElement {
 	@property({ type: Array }) topItems: TabItem[] = [];
 	@property({ type: Array }) bottomItems: TabItem[] = [];
 
+	@query("context-menu") menu: ContextMenu;
+
 	get pathHeader() {
 		return document.querySelector("fm-path-header");
 	}
@@ -43,15 +45,16 @@ class Sidebar extends CBaseElement {
 		const onClick = (ev: ClickEvent<SidebarItem>) => this.onItemClick(ev, item);
 
 		return html`
-			<context-menu>
-				<context-menu-item text="Open" @click=${onClick}></context-menu-item>
-			</context-menu>
+			<context-menu-overlay>
+				<context-menu parent-name="fm-sidebar-item">
+					<context-menu-item text="Open" @click=${onClick}></context-menu-item>
+				</context-menu>
+			</context-menu-overlay>
 		`;
 	}
 
-	onContextMenu(ev: ClickEvent, item: TabItem) {
-		ev.preventDefault();
-		ContextMenu.show(ev, this.contextMenuTemplate(item));
+	onContextMenu(ev: ClickEvent) {
+		this.menu.show(ev);
 	}
 
 	onItemClick(ev: ClickEvent<SidebarItem>, item: TabItem) {
@@ -72,15 +75,22 @@ class Sidebar extends CBaseElement {
 	}
 
 	itemTemplate(item: TabItem) {
+		if (item.type === "separator") {
+			return html`
+				<fm-sidebar-separator></fm-sidebar-separator>
+			`;
+		}
+
 		return html`
 			<fm-sidebar-item
 				name=${item.name}
 				.text=${item.text}
 				?selected=${item.name === "home"}
 				@click=${(ev: ClickEvent<SidebarItem>) => this.onItemClick(ev, item)}
-				@contextmenu=${(ev: ClickEvent<SidebarItem>) =>
-					this.onContextMenu(ev, item)}
-			></fm-sidebar-item>
+				@contextmenu=${(ev: ClickEvent<SidebarItem>) => this.onContextMenu(ev)}
+			>
+				${this.contextMenuTemplate(item)}
+			</fm-sidebar-item>
 		`;
 	}
 

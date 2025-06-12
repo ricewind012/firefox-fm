@@ -25,7 +25,7 @@ class FileRow extends CBaseElement {
 	@property({ type: String }) dir = "";
 
 	@query("#container", true) container: HTMLDivElement;
-	@query("context-menu", true) menu: HTMLElement;
+	@query("context-menu", true) menu: ContextMenu;
 
 	connectedCallback() {
 		super.connectedCallback();
@@ -42,19 +42,20 @@ class FileRow extends CBaseElement {
 	}
 
 	onContextMenu(ev: ClickEvent) {
-		ev.preventDefault();
-		ContextMenu.show(ev, this.contextMenuTemplate());
+		this.menu.show(ev);
 	}
 
 	contextMenuTemplate() {
 		return html`
-			<context-menu>
-				<context-menu-item @click=${this.open}>Open</context-menu-item>
-				<context-menu-separator></context-menu-separator>
-				<context-menu-item @click=${this.actions.delete}>
-					Delete
-				</context-menu-item>
-			</context-menu>
+			<context-menu-overlay>
+				<context-menu>
+					<context-menu-item @click=${this.open}>Open</context-menu-item>
+					<context-menu-separator></context-menu-separator>
+					<context-menu-item @click=${this.actions.delete}>
+						Delete
+					</context-menu-item>
+				</context-menu>
+			</context-menu-overlay>
 		`;
 	}
 

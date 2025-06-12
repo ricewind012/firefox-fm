@@ -1,4 +1,4 @@
-import { html, render } from "lit";
+import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { CBaseElement } from "../utils/lit";
@@ -6,36 +6,54 @@ import type { ClickEvent } from "../utils/types";
 
 declare global {
 	interface HTMLElementTagNameMap {
-		"context-menu": HTMLElement; //ContextMenu;
+		"context-menu": ContextMenu;
 		"context-menu-item": ContextMenuItem;
 		"context-menu-overlay": ContextMenuOverlay;
 		"context-menu-separator": HTMLElement;
 	}
 }
 
-const elMenu = document.querySelector("context-menu");
-const elMenuOverlay = document.querySelector("context-menu-overlay");
-
 @customElement("context-menu-overlay")
 class ContextMenuOverlay extends HTMLElement {
 	connectedCallback() {
+		this.hide();
 		this.addEventListener("click", () => {
-			this.hidden = true;
+			this.hide();
 		});
+		this.addEventListener("keydown", (ev: KeyboardEvent) => {
+			if (ev.key === "Escape") {
+				this.hide();
+			}
+		});
+	}
+
+	hide() {
+		this.hidden = true;
 	}
 }
 
-//@customElement("context-menu")
-// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
-export class ContextMenu {
-	static show(ev: ClickEvent, content) {
-		const { height, x, y } = ev.target.getBoundingClientRect();
-		elMenu.style.setProperty("--offset-x", x.toString());
-		elMenu.style.setProperty("--offset-y", (height + y).toString());
-		elMenuOverlay.hidden = false;
+@customElement("context-menu")
+export class ContextMenu extends HTMLElement {
+	overlay = this.parentElement as ContextMenuOverlay;
+	parentTag = this.getAttribute("parent-name") as keyof HTMLElementTagNameMap;
 
+	connectedCallback() {
+		console.assert(
+			this.overlay.localName === "context-menu-overlay",
+			"Parent must be a <context-menu-overlay>!",
+		);
+		console.assert(!!this.parentTag, "[parent-name] must be provided!");
+	}
+
+	show(ev: ClickEvent) {
 		ev.preventDefault();
-		render(content, elMenu);
+
+		const { height, x, y } = ev.target
+			.closest(this.parentTag)
+			.getBoundingClientRect();
+		this.style.setProperty("--offset-x", x.toString());
+		this.style.setProperty("--offset-y", (height + y).toString());
+		this.overlay.hidden = false;
 	}
 }
 

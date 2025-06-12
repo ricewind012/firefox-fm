@@ -24,6 +24,12 @@ export interface TabItem {
 	 * Localized text.
 	 */
 	text: string;
+
+	/**
+	 * Item type.
+	 * @todo Consider header ?
+	 */
+	type?: "separator";
 }
 
 @customElement("fm-path-part")
