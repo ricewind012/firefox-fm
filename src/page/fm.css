@@ -1,9 +1,15 @@
 :root {
 	--bg: Canvas;
 	--fg: CanvasText;
+
+	--color-hover: color-mix(in srgb, currentColor 10%, transparent);
+	--color-selected: color-mix(in srgb, currentColor 25%, transparent);
 }
 
 :root {
+	/* Can't go above 16px. Weird, isn't -symbolic svg ? */
+	--icon-size: 16px;
+
 	--spacing-05x: 4px;
 	--spacing-1x: 8px;
 	--spacing-2x: 16px;
@@ -29,6 +35,8 @@ fm-app {
 }
 
 fm-content {
+	--sidebar-shadow-size: var(--spacing-3x);
+
 	flex: 1;
 	flex-direction: column;
 
@@ -50,12 +58,12 @@ fm-content {
 		abackground: url("file:///home/chino/doc/pic/photo-1560928703-7e8f6bd6b715.jpeg");
 		background-position: center;
 		box-shadow:
-			inset 0 0 50vw var(--fg),
-			inset var(--spacing-3x) 0,
-			inset 100vw 0 color-mix(in srgb, var(--bg) 25%, transparent);
+			inset var(--sidebar-shadow-size) 0 50vw var(--bg),
+			inset var(--sidebar-shadow-size) 0,
+			inset 100vw 0 color-mix(in srgb, var(--fg) 25%, transparent);
 	}
 
 	&::after {
-		backdrop-filter: blur(12px);
+		backdrop-filter: blur(24px);
 	}
 }

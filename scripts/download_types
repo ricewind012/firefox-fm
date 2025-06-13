@@ -14,61 +14,68 @@ pack() {
 	npm --pack-destination="$CURRENT_DIR" pack
 }
 
-# arg 1 - "owner/name" repo
-# arg 2 - path
-# arg 3 - array of files to download
 download_pkg() {
-	base_url=https://raw.githubusercontent.com/$1/master/$2
-	endpoint_path=/repos/$1/contents/$2
-	types_dir=$TYPES_PARENT_DIR/${1##*/}
+	repo=$1
+	repo_path=$2
+	files_to_dl=$3
+
+	base_url=https://raw.githubusercontent.com/$repo/master/$repo_path
+	endpoint_path=/repos/$repo/contents/$repo_path
+	types_dir=$TYPES_PARENT_DIR/${repo##*/}
 
 	mkdir -p "$types_dir"
 	cd "$types_dir"
 
-	for i in $3; do
+	for i in $files_to_dl; do
 		case $i in */*)
 			mkdir -p "${i%/*}"
 		esac
 		curl -s -o "$i" "$base_url/$i"
 	done
+}
 
-	if ! pack; then
-		# wtf?
-		path=package.json
-		c=$(cat "$path")
-
-		printf '{ "name": "@types/gecko", "version": "1.0.0", %s' "${c#'{'}" > "$path"
-		pack
-	fi
-
+post_download_pkg() {
+	pack
 	cd "$CURRENT_DIR"
 }
 
-download_pkg mozilla-firefox/firefox tools/@types "
-	$FILES_BASE
-	generated/lib.gecko.darwin.d.ts
-	generated/lib.gecko.dom.d.ts
-	generated/lib.gecko.glean.d.ts
-	generated/lib.gecko.linux.d.ts
-	generated/lib.gecko.modules.d.ts
-	generated/lib.gecko.nsresult.d.ts
-	generated/lib.gecko.services.d.ts
-	generated/lib.gecko.win32.d.ts
-	generated/lib.gecko.xpcom.d.ts
-	generated/tspaths.json
-	lib.gecko.custom.d.ts
-	lib.gecko.tweaks.d.ts
-	lib.gecko.xpidl.d.ts
-"
+main() {
+	download_pkg mozilla-firefox/firefox tools/@types "
+		$FILES_BASE
+		generated/lib.gecko.darwin.d.ts
+		generated/lib.gecko.dom.d.ts
+		generated/lib.gecko.glean.d.ts
+		generated/lib.gecko.linux.d.ts
+		generated/lib.gecko.modules.d.ts
+		generated/lib.gecko.nsresult.d.ts
+		generated/lib.gecko.services.d.ts
+		generated/lib.gecko.win32.d.ts
+		generated/lib.gecko.xpcom.d.ts
+		generated/tspaths.json
+		lib.gecko.custom.d.ts
+		lib.gecko.tweaks.d.ts
+		lib.gecko.xpidl.d.ts
+	"
+	# wtf?
+	path=package.json
+	c=$(cat "$path")
+	printf '{ "name": "@types/gecko", "version": "1.0.0", %s' "${c#'{'}" > "$path"
+	post_download_pkg
 
-download_pkg MrOtherGuy/fx-autoconfig types "
-	$FILES_BASE
-	api/FileSystem.d.ts
-	api/Hotkeys.d.ts
-	api/Notifications.d.ts
-	api/Prefs.d.ts
-	api/Runtime.d.ts
-	api/Scripts.d.ts
-	api/Utils.d.ts
-	api/Windows.d.ts
-"
+	download_pkg MrOtherGuy/fx-autoconfig types "
+		$FILES_BASE
+		api/FileSystem.d.ts
+		api/Hotkeys.d.ts
+		api/Notifications.d.ts
+		api/Prefs.d.ts
+		api/Runtime.d.ts
+		api/Scripts.d.ts
+		api/Utils.d.ts
+		api/Windows.d.ts
+	"
+	post_download_pkg
+
+	rm -rf "$TYPES_PARENT_DIR"
+}
+
+main

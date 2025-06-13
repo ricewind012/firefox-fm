@@ -1,6 +1,6 @@
 fm-sidebar {
-	background-color: var(--fg);
-	color: var(--bg);
+	background-color: var(--bg);
+	color: var(--fg);
 	gap: var(--spacing-1x);
 	padding-block: var(--spacing-2x);
 	padding-inline: var(--spacing-3x);

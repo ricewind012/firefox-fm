@@ -22,7 +22,7 @@ declare global {
 		"fm-path-part": PathPart;
 		"fm-path-header": PathHeader;
 		"fm-tabs": TabsContainer;
-		"fm-tab": Tab;
+		"fm-tab": DirTab;
 	}
 }
 
@@ -44,31 +44,37 @@ export interface TabItem {
 	type?: "separator";
 }
 
-const divider = html`
-	<fm-path-part-divider></fm-path-part-divider>
-`;
+export class CTab extends CBaseElement {
+	m_elTabs: TabsContainer;
+}
 
 @customElement("fm-file-row")
 class FileRow extends CBaseElement {
-	actions: FileActions;
-	selectedTab: Tab;
-
 	@property({ type: Object }) file: nsIFile = null;
-
-	@query("#container", true) container: HTMLDivElement;
 	@query("context-menu", true) menu: ContextMenu;
+
+	m_Actions: FileActions;
+
+	get m_elSelectedTab() {
+		return document.querySelector("fm-tabs");
+	}
+
+	constructor() {
+		super();
+		this.m_Actions = new FileActions(this.file);
+	}
 
 	connectedCallback() {
 		super.connectedCallback();
-		this.actions = new FileActions(this.file);
-		this.selectedTab = document.querySelector("fm-tab[selected]");
+		this.addEventListener("contextmenu", this.onContextMenu);
+		this.addEventListener("dblclick", this.open);
 	}
 
 	open() {
 		if (this.file.isFile()) {
-			this.actions.open();
+			this.m_Actions.open();
 		} else {
-			this.selectedTab.setAttribute("path", this.file.path);
+			this.m_elSelectedTab.setAttribute("path", this.file.path);
 		}
 	}
 
@@ -81,7 +87,7 @@ class FileRow extends CBaseElement {
 			<context-menu>
 				<context-menu-item @click=${this.open}>Open</context-menu-item>
 				<context-menu-separator></context-menu-separator>
-				<context-menu-item @click=${this.actions.delete}>
+				<context-menu-item @click=${this.m_Actions.delete}>
 					Delete
 				</context-menu-item>
 			</context-menu>
@@ -97,53 +103,44 @@ class FileRow extends CBaseElement {
 
 		const extension = getFileExtension(path);
 		const icon = isFile
-			? `moz-icon://.${extension}?size=16`
-			: "chrome://global/skin/icons/folder.svg";
+			? html`
+					<img src="moz-icon://.${extension}?size=16}" />
+				`
+			: html`
+					<fm-icon name="folder"></fm-icon>
+				`;
 
 		return html`
-			<div
-				id="container"
-				tabindex="0"
+			<fm-file-row-info-container
 				@contextmenu=${this.onContextMenu}
 				@dblclick=${this.open}
 			>
-				<img src="${icon}" />
-				<div>${displayName}</div>
-				<div>${date}</div>
-				<div>
-					${isFile &&
-					html`
-						${bytes} ${unit}
-					`}
-				</div>
-			</div>
-			<button
-				iconsrc="chrome://global/skin/icons/more.svg"
-				type="icon ghost"
-				@click=${this.onContextMenu}
-			></button>
-
-			${this.contextMenuTemplate()}
+				${icon}
+				<fm-text>${displayName}</fm-text>
+				<fm-text>${date}</fm-text>
+				<fm-text>
+					${isFile
+						? html`
+								${bytes} ${unit}
+							`
+						: ""}
+				</fm-text>
+			</fm-file-row-info-container>
+			<fm-icon-button @click=${this.onContextMenu}>
+				<fm-icon name="view-more-horizontal"></fm-icon>
+				${this.contextMenuTemplate()}
+			</fm-icon-button>
 		`;
 	}
 }
 
 @customElement("fm-path-part")
 class PathPart extends CBaseElement {
-	@property({ type: Boolean }) divider = false;
 	@property({ type: String }) name = "";
-	@property({ type: String }) path = "";
-
-	selectedTab: Tab = document.querySelector("fm-tab[selected]");
-
-	onClick() {
-		this.selectedTab.setAttribute("path", this.path);
-	}
 
 	render() {
 		return html`
-			<button @click=${this.onClick}>${this.name}</button>
-			${this.divider ? divider : ""}
+			<fm-text>${this.name}</fm-text>
 		`;
 	}
 }
@@ -152,46 +149,67 @@ class PathPart extends CBaseElement {
 class PathHeader extends CBaseElement {
 	@property({ type: String }) path = "";
 
-	render() {
+	get m_elSelectedTab() {
+		return document.querySelector("fm-tabs");
+	}
+
+	getDirs() {
 		let { path } = this;
-		let i = 0;
-		// 1 for /
-		const length = PathUtils.split(path).length - 1;
-		const dirs = [];
+		const dirs: { fileName: string; path: string }[] = [];
 
 		while (path) {
-			const divider = i !== 0 && i !== length;
 			const fileName = PathUtils.filename(path);
 			if (!path) {
 				continue;
 			}
 
-			i++;
-			dirs.unshift({ divider, path, fileName, i });
+			dirs.unshift({ path, fileName });
 			path = PathUtils.parent(path);
 		}
 
+		return dirs;
+	}
+
+	render() {
+		const dirs = this.getDirs();
+
 		return html`
-			${dirs.map(
-				({ divider, path, fileName }) => html`
-					<fm-path-part
-						.divider=${divider}
-						.path=${path}
-						.name=${fileName}
-					></fm-path-part>
-				`,
-			)}
+			${dirs.map(({ path, fileName }) => {
+				function onClick() {
+					this.m_elSelectedTab.setAttribute("path", path);
+					console.log("fm-path-part path = %o", path);
+				}
+
+				return html`
+					<fm-path-part .name=${fileName} @click=${onClick}></fm-path-part>
+				`;
+			})}
 		`;
 	}
 }
 
+// TODO: deduct from settings
 @customElement("fm-tab")
-export class Tab extends CBaseElement {
+export class DirTab extends CTab {
 	@property({ type: String, attribute: true }) name = "";
-	@property({ type: String }) path = "";
 	@property({ type: Boolean, attribute: true }) selected = false;
 
-	files: nsIFile[];
+	m_strPath: string;
+	m_vecFiles: nsIFile[];
+
+	constructor() {
+		super();
+		this.m_elTabs = this.parentElement as TabsContainer;
+
+		const path = getPathForName(this.name as UserDir_t);
+		console.log(
+			"changePath:\npath: %o, getPathForName result: %o, m_elTabs: %o",
+			this.m_strPath,
+			path,
+			this.m_elTabs,
+		);
+		this.changePath(path);
+	}
 
 	/**
 	 * @todo Maybe there is a better way for the first condition
@@ -203,51 +221,21 @@ export class Tab extends CBaseElement {
 		}
 
 		super.attributeChangedCallback(name, oldValue, newValue);
-		this.changePath(newValue);
+		//this.changePath(newValue);
 		// TODO: ?
-		this.requestUpdate();
+		//this.requestUpdate();
 	}
 
-	/**
-	 * @param path Dir path.
-	 */
-	changePath(path?: string) {
-		const dir = path || getPathForName(this.name as UserDir_t);
-		console.log(
-			"changePath:\path: %o, getPathForName result: %o",
-			path,
-			getPathForName(this.name as UserDir_t),
-		);
-		try {
-			const pDir = newFile(dir);
-			this.files = [...pDir.directoryEntries];
-		} catch (_e) {
-			console.error("err for %o", dir);
-		}
-		this.setAttribute("path", dir);
-
-		const elTabsContainer = document.querySelector("fm-tabs");
-		elTabsContainer.changePath(path as UserDir_t);
-	}
-
-	connectedCallback() {
-		// TODO: deduct from settings
-		this.path = getPathForName(this.name as UserDir_t);
-		this.changePath(this.path);
+	changePath(path: string) {
+		const pDir = newFile(path);
+		this.m_vecFiles = [...pDir.directoryEntries];
+		this.setAttribute("path", path);
+		this.m_elTabs.changePath(path);
 	}
 
 	render() {
-		const { path, name } = this;
-
 		return html`
-			<div style="flex-direction: column">
-				path -
-				<div style="color: #f09">${path}</div>
-				name -
-				<div style="color: #f09">${name}</div>
-			</div>
-
-			${this.files.map(
+			${this.m_vecFiles.map(
 				(file) => html`
 					<fm-file-row .file=${file}></fm-file-row>
 				`,
@@ -258,32 +246,39 @@ export class Tab extends CBaseElement {
 
 @customElement("fm-tabs")
 class TabsContainer extends CBaseElement {
+	/**
+	 * Used to change paths across tabs.
+	 */
 	@property({ type: String }) path = "";
-	@property({ type: Array }) tabs: TabItem[] = [];
+
+	/**
+	 * Used for sidebar items to indicate if they're currently selected.
+	 */
 	@property({ type: String, attribute: true }) selectedTab = "";
 
+	@property({ type: Array }) tabs: TabItem[] = [];
+
+	/*
 	attributeChangedCallback(
 		name: string,
 		oldValue: string,
 		newValue: string,
 	): void {
-		console.warn(
-			"attributeChangedCallback: %o, %o, %o",
-			name,
-			oldValue,
-			newValue,
-		);
+		console.warn("attributeChangedCb: %o, %o, %o", name, oldValue, newValue);
 		if (oldValue === newValue) {
 			return;
 		}
 
 		super.attributeChangedCallback(name, oldValue, newValue);
-		this.changePath(newValue as UserDir_t);
 		//this.requestUpdate();
 	}
+		*/
 
-	changePath(name: UserDir_t) {
-		const path = getPathForName(name);
+	ChangeVisibleTab(strName: string) {
+		this.selectedTab = strName;
+	}
+
+	changePath(path: string) {
 		this.setAttribute("path", path);
 	}
 
@@ -293,7 +288,14 @@ class TabsContainer extends CBaseElement {
 		return html`
 			${tabs.map(
 				(tab) => html`
-					<fm-tab name=${tab.name} ?hidden=${tab.name !== selectedTab}></fm-tab>
+					<fm-tab name=${tab.name} ?hidden=${tab.name !== selectedTab}>
+						<fm-file-row-info-container>
+							<div></div>
+							<fm-text>Name</fm-text>
+							<fm-text>Date</fm-text>
+							<fm-text>Size</fm-text>
+						</fm-file-row-info-container>
+					</fm-tab>
 				`,
 			)}
 		`;

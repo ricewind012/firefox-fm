@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators.js";
 declare global {
 	interface HTMLElementTagNameMap {
 		"fm-icon": Icon;
+		"fm-icon-button": HTMLElement;
 		"fm-text": HTMLElement;
 	}
 }
@@ -25,7 +26,8 @@ class Icon extends HTMLElement {
 	}
 
 	connectedCallback() {
-		const icon = gtkIcons.get(this.getAttribute("name"));
+		const name = this.getAttribute("name");
+		const icon = gtkIcons.get(name) || name;
 		this.style.setProperty("--icon", this.getCSSValue(icon));
 	}
 }

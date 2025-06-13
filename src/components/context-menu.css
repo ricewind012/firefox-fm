@@ -23,9 +23,6 @@ context-menu {
 }
 
 context-menu-item {
-	--color-hover: color-mix(in srgb, currentColor 10%, transparent);
-	--color-selected: color-mix(in srgb, currentColor 25%, transparent);
-
 	padding: var(--spacing-1x) var(--spacing-2x);
 
 	&:hover {
