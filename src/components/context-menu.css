@@ -9,16 +9,16 @@ context-menu {
 	--shadow-size: 24px;
 	--shadow-offset: calc(var(--shadow-size) / 4);
 
-	backdrop-filter: blur(36px);
+	backdrop-filter: blur(18px);
 	background: color-mix(in srgb, var(--cm-color) 50%, transparent);
 	border: 1px solid var(--cm-color);
-	box-shadow: 0 var(--shadow-offset) var(--shadow-size) rgba(0 0 0 / 0.25);
+	box-shadow: 0 var(--shadow-offset) var(--shadow-size) rgba(0 0 0 / 0.5);
 	margin-top: var(--spacing-1x);
 
 	flex-direction: column;
 	position: fixed;
-	top: calc(var(--offset-y) * 1px);
-	left: calc(var(--offset-x) * 1px);
+	top: calc(var(--offset-y, -100vh) * 1px);
+	left: calc(var(--offset-x, -100vw) * 1px);
 	min-width: 100px;
 }
 

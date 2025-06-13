@@ -4,7 +4,7 @@
 		<meta charset="utf-8" />
 		<meta
 			http-equiv="Content-Security-Policy"
-			content="default-src resource: chrome:; script-src chrome: file: 'unsafe-inline'; object-src 'none'; img-src moz-icon: data: chrome:;"
+			content="default-src resource: chrome:; script-src chrome: file: resource:; object-src 'none'; img-src moz-icon: data: chrome:;"
 		/>
 		<meta name="color-scheme" content="light dark" />
 		<title>File Manager</title>
@@ -38,7 +38,5 @@
 
 	<body>
 		<fm-app></fm-app>
-
-		<context-menu-overlay></context-menu-overlay>
 	</body>
 </html>

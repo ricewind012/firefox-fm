@@ -16,40 +16,28 @@ declare global {
 
 @customElement("fm-sidebar-item")
 class SidebarItem extends CBaseElement {
-	@property({ type: String }) name = "";
-	@property({ type: String }) text = "";
+	@property({ type: Object }) item: TabItem = null;
 	@property({ type: Boolean }) selected = false;
-
-	render() {
-		const { name, text } = this;
-
-		return html`
-			<fm-icon name=${name}></fm-icon>
-			<fm-text>${text}</fm-text>
-		`;
-	}
-}
-
-@customElement("fm-sidebar")
-class Sidebar extends CBaseElement {
-	@property({ type: Array }) topItems: TabItem[] = [];
-	@property({ type: Array }) bottomItems: TabItem[] = [];
-
 	@query("context-menu") menu: ContextMenu;
 
 	get pathHeader() {
 		return document.querySelector("fm-path-header");
 	}
 
-	contextMenuTemplate(item: TabItem) {
-		const onClick = (ev: ClickEvent<SidebarItem>) => this.onItemClick(ev, item);
+	connectedCallback() {
+		super.connectedCallback();
+		this.addEventListener("click", this.onClick);
+		this.addEventListener("contextmenu", this.onContextMenu);
+	}
 
+	contextMenuTemplate() {
 		return html`
-			<context-menu-overlay>
-				<context-menu parent-name="fm-sidebar-item">
-					<context-menu-item text="Open" @click=${onClick}></context-menu-item>
-				</context-menu>
-			</context-menu-overlay>
+			<context-menu parent-name="fm-sidebar-item">
+				<context-menu-item
+					text="Open"
+					@click=${this.onClick}
+				></context-menu-item>
+			</context-menu>
 		`;
 	}
 
@@ -57,7 +45,8 @@ class Sidebar extends CBaseElement {
 		this.menu.show(ev);
 	}
 
-	onItemClick(ev: ClickEvent<SidebarItem>, item: TabItem) {
+	onClick(ev: ClickEvent<SidebarItem>) {
+		const { item } = this;
 		const tabsContainer = document.querySelector("fm-tabs");
 		const { selectedTab } = tabsContainer;
 		if (selectedTab === item.name) {
@@ -74,6 +63,22 @@ class Sidebar extends CBaseElement {
 		target.setAttribute("selected", "true");
 	}
 
+	render() {
+		const { name, text } = this.item;
+
+		return html`
+			${this.contextMenuTemplate()}
+			<fm-icon name=${name}></fm-icon>
+			<fm-text>${text}</fm-text>
+		`;
+	}
+}
+
+@customElement("fm-sidebar")
+class Sidebar extends CBaseElement {
+	@property({ type: Array }) topItems: TabItem[] = [];
+	@property({ type: Array }) bottomItems: TabItem[] = [];
+
 	itemTemplate(item: TabItem) {
 		if (item.type === "separator") {
 			return html`
@@ -83,14 +88,9 @@ class Sidebar extends CBaseElement {
 
 		return html`
 			<fm-sidebar-item
-				name=${item.name}
-				.text=${item.text}
+				.item=${item}
 				?selected=${item.name === "home"}
-				@click=${(ev: ClickEvent<SidebarItem>) => this.onItemClick(ev, item)}
-				@contextmenu=${(ev: ClickEvent<SidebarItem>) => this.onContextMenu(ev)}
-			>
-				${this.contextMenuTemplate(item)}
-			</fm-sidebar-item>
+			></fm-sidebar-item>
 		`;
 	}
 
@@ -100,7 +100,7 @@ class Sidebar extends CBaseElement {
 		return html`
 			${topItems.map((item) => this.itemTemplate(item))}
 			<fm-sidebar-spacer></fm-sidebar-spacer>
-			${bottomItems.map((item) => this.itemTemplate(item))}
+			<!--${bottomItems.map((item) => this.itemTemplate(item))}-->
 		`;
 	}
 }

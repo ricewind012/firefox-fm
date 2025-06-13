@@ -1,7 +1,7 @@
 import { html } from "lit";
 import { customElement } from "lit/decorators.js";
 
-import { getPathForName } from "../utils/file";
+import { getPathForName, type UserDir_t } from "../utils/file";
 import { CBaseElement } from "../utils/lit";
 import type { TabItem } from "../components/content";
 
@@ -23,6 +23,7 @@ const vecTopItems: TabItem[] = [
 	{ name: "music", text: "Music" },
 	{ name: "pictures", text: "Pictures" },
 	{ name: "videos", text: "Videos" },
+	{ name: "separator", type: "separator" },
 	{ name: "root", text: "File System" },
 ];
 const vecBottomItems: TabItem[] = [{ name: "settings", text: "Settings" }];
@@ -30,10 +31,10 @@ const vecAllTabs = [...vecTopItems, ...vecBottomItems];
 
 @customElement("fm-app")
 class App extends CBaseElement {
+	static DEFAULT_TAB: UserDir_t = "home";
+
 	render() {
-		const DEFAULT_TAB = "home";
-		const path = getPathForName(DEFAULT_TAB);
-		console.log(path);
+		const path = getPathForName(App.DEFAULT_TAB);
 
 		return html`
 			<fm-sidebar
@@ -42,7 +43,7 @@ class App extends CBaseElement {
 			></fm-sidebar>
 			<fm-content>
 				<fm-path-header .path=${path}></fm-path-header>
-				<fm-tabs selectedTab=${DEFAULT_TAB} .tabs=${vecAllTabs}></fm-tabs>
+				<fm-tabs selectedTab=${App.DEFAULT_TAB} .tabs=${vecAllTabs}></fm-tabs>
 			</fm-content>
 		`;
 	}

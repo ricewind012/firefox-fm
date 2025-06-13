@@ -74,14 +74,14 @@ class FileRow extends CBaseElement {
 		return html`
 			<div id="container" tabindex="0" @dblclick=${this.open}>
 				<img src="${icon}" />
-				<span>${displayName}</span>
-				<span>${date}</span>
-				<span>
+				<div>${displayName}</div>
+				<div>${date}</div>
+				<div>
 					${isFile &&
 					html`
 						${bytes} ${unit}
 					`}
-				</span>
+				</div>
 			</div>
 			<button
 				iconsrc="chrome://global/skin/icons/more.svg"
