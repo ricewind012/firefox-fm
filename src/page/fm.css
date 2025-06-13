@@ -49,14 +49,13 @@ fm-content {
 		background: url("file:///home/chino/doc/dls/9acdff49740fe471eb0beb37350c9864.png");
 		abackground: url("file:///home/chino/doc/pic/photo-1560928703-7e8f6bd6b715.jpeg");
 		background-position: center;
-		box-shadow: inset 0 0 50vw var(--fg);
+		box-shadow:
+			inset 0 0 50vw var(--fg),
+			inset var(--spacing-3x) 0,
+			inset 100vw 0 color-mix(in srgb, var(--bg) 25%, transparent);
 	}
 
 	&::after {
-		backdrop-filter: brightness(0.75) blur(12px);
-
-		@media (prefers-color-scheme: light) {
-			backdrop-filter: brightness(1.25) blur(12px);
-		}
+		backdrop-filter: blur(12px);
 	}
 }

@@ -67,9 +67,10 @@ class SidebarItem extends CBaseElement {
 		const { name, text } = this.item;
 
 		return html`
-			${this.contextMenuTemplate()}
 			<fm-icon name=${name}></fm-icon>
 			<fm-text>${text}</fm-text>
+
+			${this.contextMenuTemplate()}
 		`;
 	}
 }

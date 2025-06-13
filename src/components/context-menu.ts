@@ -13,8 +13,6 @@ declare global {
 	}
 }
 
-//document.addEventListener("mousedown");
-
 /*
 @customElement("context-menu-overlay")
 class ContextMenuOverlay extends HTMLElement {
@@ -38,6 +36,8 @@ class ContextMenuOverlay extends HTMLElement {
 
 /**
  * @note Put me directly inside the parent whose position you want me to use.
+ * @todo Use `<body>` --> `<context-menu-overlay>` and put all menus there - all
+ * the document/window events fire when I do literally anything.
  */
 @customElement("context-menu")
 export class ContextMenu extends HTMLElement {
@@ -52,24 +52,19 @@ export class ContextMenu extends HTMLElement {
 			this.overlay.localName === "context-menu-overlay",
 			"Parent must be a <context-menu-overlay>!",
 		);
+		console.assert(!!this.parentTag, "[parent-name] must be provided!");
 		*/
-		//console.assert(!!this.parentTag, "[parent-name] must be provided!");
-		document.addEventListener("mousedown", this.onDocumentClick);
+		document.addEventListener("mouseup", (ev: MouseEvent) => {
+			// only catch left click
+			if (ev.which === 1) {
+				this.hide();
+			}
+		});
 		window.addEventListener("keydown", (ev: KeyboardEvent) => {
 			if (ev.key === "Escape") {
 				this.hide();
 			}
 		});
-	}
-
-	onDocumentClick(ev: ClickEvent) {
-		const menu = ev.target.closest(
-			"context-menu",
-		) as unknown as ContextMenu | null;
-		console.log("ondocclick: target = %o, menu = %o", ev.target, menu);
-		if (menu !== this) {
-			this.hide();
-		}
 	}
 
 	show(ev: ClickEvent) {

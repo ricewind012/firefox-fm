@@ -47,15 +47,13 @@ class FileRow extends CBaseElement {
 
 	contextMenuTemplate() {
 		return html`
-			<context-menu-overlay>
-				<context-menu>
-					<context-menu-item @click=${this.open}>Open</context-menu-item>
-					<context-menu-separator></context-menu-separator>
-					<context-menu-item @click=${this.actions.delete}>
-						Delete
-					</context-menu-item>
-				</context-menu>
-			</context-menu-overlay>
+			<context-menu>
+				<context-menu-item @click=${this.open}>Open</context-menu-item>
+				<context-menu-separator></context-menu-separator>
+				<context-menu-item @click=${this.actions.delete}>
+					Delete
+				</context-menu-item>
+			</context-menu>
 		`;
 	}
 
