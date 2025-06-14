@@ -1,4 +1,6 @@
+about-fm.uc.mjs
 dist
+
 node_modules
 external_types
 package-lock.json

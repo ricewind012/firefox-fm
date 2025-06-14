@@ -40,8 +40,7 @@ fm-content {
 	flex: 1;
 	flex-direction: column;
 
-	/* TODO: temp */
-	padding: 10%;
+	padding-inline: 10%;
 	position: relative;
 
 	&::before,
@@ -55,12 +54,11 @@ fm-content {
 
 	&::before {
 		background: url("file:///home/chino/doc/dls/9acdff49740fe471eb0beb37350c9864.png");
-		abackground: url("file:///home/chino/doc/pic/photo-1560928703-7e8f6bd6b715.jpeg");
 		background-position: center;
 		box-shadow:
 			inset var(--sidebar-shadow-size) 0 50vw var(--bg),
-			inset var(--sidebar-shadow-size) 0,
-			inset 100vw 0 color-mix(in srgb, var(--fg) 25%, transparent);
+			inset var(--sidebar-shadow-size) 0 #000,
+			inset 100vw 0 color-mix(in srgb, #000 25%, transparent);
 	}
 
 	&::after {

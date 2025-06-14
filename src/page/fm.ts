@@ -13,7 +13,7 @@ import "../components/sidebar";
 
 declare global {
 	interface HTMLElementTagNameMap {
-		"fm-app": App;
+		"fm-app": CFMApp;
 	}
 }
 
@@ -32,11 +32,11 @@ const vecBottomItems: TabItem[] = [{ name: "settings", text: "Settings" }];
 const vecAllTabs = [...vecTopItems, ...vecBottomItems];
 
 @customElement("fm-app")
-class App extends CBaseElement {
+class CFMApp extends CBaseElement {
 	static DEFAULT_TAB: UserDir_t = "home";
 
 	render() {
-		const path = getPathForName(App.DEFAULT_TAB);
+		const path = getPathForName(CFMApp.DEFAULT_TAB);
 
 		return html`
 			<fm-sidebar
@@ -44,11 +44,12 @@ class App extends CBaseElement {
 				.bottomItems=${vecBottomItems}
 			></fm-sidebar>
 			<fm-content>
-				<fm-path-header .path=${path}></fm-path-header>
+				<!-- Only top tabs are intended for usage with the <fm-tabs>
+				  -- map in render() -->
 				<fm-tabs
 					path=${path}
-					selectedTab=${App.DEFAULT_TAB}
-					.tabs=${vecAllTabs}
+					selectedTab=${CFMApp.DEFAULT_TAB}
+					.tabs=${vecTopItems}
 				></fm-tabs>
 			</fm-content>
 		`;

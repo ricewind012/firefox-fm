@@ -20,10 +20,6 @@ class SidebarItem extends CBaseElement {
 	@property({ type: Boolean }) selected = false;
 	@query("context-menu") menu: ContextMenu;
 
-	get pathHeader() {
-		return document.querySelector("fm-path-header");
-	}
-
 	connectedCallback() {
 		super.connectedCallback();
 		this.addEventListener("click", this.onClick);
@@ -53,9 +49,9 @@ class SidebarItem extends CBaseElement {
 			return;
 		}
 
-		tabsContainer.setAttribute("selectedtab", item.name);
-		this.pathHeader.setAttribute("path", "asd");
+		tabsContainer.ChangeVisibleTab(item.name);
 
+		// TODO: wtf is this shit
 		document
 			.querySelector<SidebarItem>("fm-sidebar-item[selected]")
 			.removeAttribute("selected");
@@ -90,7 +86,7 @@ class Sidebar extends CBaseElement {
 		return html`
 			<fm-sidebar-item
 				.item=${item}
-				?selected=${item.name === "home"}
+				?selected=${item.name === /* CFMApp.DEFAULT_TAB */ "home"}
 			></fm-sidebar-item>
 		`;
 	}
@@ -101,7 +97,7 @@ class Sidebar extends CBaseElement {
 		return html`
 			${topItems.map((item) => this.itemTemplate(item))}
 			<fm-sidebar-spacer></fm-sidebar-spacer>
-			<!--${bottomItems.map((item) => this.itemTemplate(item))}-->
+			${bottomItems.map((item) => this.itemTemplate(item))}
 		`;
 	}
 }

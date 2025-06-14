@@ -5,16 +5,28 @@
 // @include      main
 // ==/UserScript==
 
-// TODO: ts rewrite
+declare global {
+	interface Window {
+		/**
+		 * @see https://searchfox.org/mozilla-central/source/browser/base/content/browser.js#4672
+		 */
+		switchToTabHavingURI(
+			aURI: nsIURI,
+			aOpenNew: boolean,
+			aOpenParams?: object,
+			aUserContextId?: string | null,
+		): boolean;
+	}
+}
 
 import { Hotkeys, Utils } from "chrome://userchromejs/content/uc_api.sys.mjs";
 
 const registrar = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
 const chromeRegistry = Cc["@mozilla.org/chrome/chrome-registry;1"].getService(
-	Ci.nsIChromeRegistry
+	Ci.nsIChromeRegistry,
 );
 const fphs = Cc["@mozilla.org/network/protocol;1?name=file"].getService(
-	Ci.nsIFileProtocolHandler
+	Ci.nsIFileProtocolHandler,
 );
 
 function findResources() {
@@ -35,6 +47,9 @@ function generateFreeCID() {
 }
 
 class AboutFM {
+	uri: nsIURI;
+	urlString: string;
+
 	static ABOUT_URL = "about:fm";
 
 	constructor() {
@@ -64,8 +79,7 @@ class AboutFM {
 }
 
 const aboutFm = new AboutFM();
-/** @type nsIFactory */
-const AboutModuleFactory = {
+const AboutModuleFactory: nsIFactory = {
 	createInstance(aIID) {
 		return aboutFm.QueryInterface(aIID);
 	},
@@ -76,11 +90,13 @@ if (aboutFm.urlString) {
 		generateFreeCID(),
 		AboutFM.ABOUT_URL,
 		"@mozilla.org/network/protocol/about;1?what=fm",
-		AboutModuleFactory
+		AboutModuleFactory,
 	);
 }
 
-const openFm = () => switchToTabHavingURI(AboutFM.ABOUT_URL, true);
+function openFm() {
+	globalThis.switchToTabHavingURI(AboutFM.ABOUT_URL, true);
+}
 
 Utils.createWidget({
 	id: "open-fm",

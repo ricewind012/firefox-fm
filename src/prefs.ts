@@ -1,16 +1,19 @@
 const { PREF_BOOL, PREF_INT, PREF_STRING } = Services.prefs;
 
-interface Pref {
+export interface Pref {
 	description?: string;
 	label: string;
-	pref: string;
+	name: string;
 	/**
 	 * @see {@link nsIPrefBranch}
 	 */
-	type: number;
+	type:
+		| nsIPrefBranch["PREF_STRING"]
+		| nsIPrefBranch["PREF_INT"]
+		| nsIPrefBranch["PREF_BOOL"];
 }
 
-interface PrefGroup {
+export interface PrefGroup {
 	description: string;
 	label: string;
 	opts: Pref[];
@@ -25,7 +28,7 @@ export const prefs: PrefGroup[] = [
 		opts: [
 			{
 				label: "Display directories first",
-				pref: PREF_DISPLAY_DIRS_FIRST,
+				name: PREF_DISPLAY_DIRS_FIRST,
 				type: PREF_BOOL,
 			},
 		],

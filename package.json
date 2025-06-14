@@ -1,7 +1,8 @@
 {
 	"type": "module",
 	"scripts": {
-		"build": "npx rollup -c"
+		"build": "npx rollup -c",
+		"build-userscript": "npx tsc --skipLibCheck --target esnext about-fm.uc.mts"
 	},
 	"dependencies": {
 		"@rollup/plugin-node-resolve": "^16.0.1",
