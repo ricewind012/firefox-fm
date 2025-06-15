@@ -1,4 +1,4 @@
-fm-icon {
+life-icon {
 	background-image: var(--icon);
 	background-size: var(--icon-size);
 
@@ -7,7 +7,7 @@ fm-icon {
 	height: var(--icon-size);
 }
 
-fm-icon-button {
+life-icon-button {
 	padding: var(--spacing-1x);
 
 	align-items: center;
@@ -21,7 +21,7 @@ fm-icon-button {
 	}
 }
 
-fm-text {
+life-text {
 	display: block;
 	overflow: hidden;
 	text-overflow: ellipsis;

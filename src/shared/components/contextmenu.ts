@@ -1,8 +1,8 @@
 import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import { CBaseElement } from "../utils/lit";
-import type { ClickEvent } from "../utils/types";
+import { CBaseElement } from "@utils/lit";
+import type { ClickEvent } from "@utils/types";
 
 declare global {
 	interface HTMLElementTagNameMap {
@@ -96,8 +96,8 @@ class ContextMenuItem extends CBaseElement {
 		const { icon, text } = this;
 
 		return html`
-			<fm-icon name=${icon}></fm-icon>
-			<fm-text>${text}</fm-text>
+			<life-icon name=${icon}></life-icon>
+			<life-text>${text}</life-text>
 		`;
 	}
 }

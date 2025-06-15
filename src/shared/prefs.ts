@@ -3,7 +3,13 @@ const { PREF_BOOL, PREF_INT, PREF_STRING } = Services.prefs;
 export interface Pref {
 	description?: string;
 	label: string;
+
+	/**
+	 * Naming - `life.app.group-name.pref-name`. Must exclude the `life.` part
+	 * and be kebab-case.
+	 */
 	name: string;
+
 	/**
 	 * @see {@link nsIPrefBranch}
 	 */
@@ -18,6 +24,8 @@ export interface PrefGroup {
 	label: string;
 	opts: Pref[];
 }
+
+export const prefBranch = Services.prefs.getBranch("life.");
 
 export const PREF_DISPLAY_DIRS_FIRST = "fm.general.dirs-first";
 

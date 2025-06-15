@@ -2,9 +2,9 @@ import { customElement } from "lit/decorators.js";
 
 declare global {
 	interface HTMLElementTagNameMap {
-		"fm-icon": Icon;
-		"fm-icon-button": HTMLElement;
-		"fm-text": HTMLElement;
+		"life-icon": Icon;
+		"life-icon-button": HTMLElement;
+		"life-text": HTMLElement;
 	}
 }
 
@@ -19,7 +19,7 @@ const gtkIcons = new Map([
 	["settings", "applications-system"],
 ]);
 
-@customElement("fm-icon")
+@customElement("life-icon")
 class Icon extends HTMLElement {
 	getCSSValue(name: string) {
 		return `-moz-symbolic-icon(${name}-symbolic)`;

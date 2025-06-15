@@ -16,7 +16,10 @@
 			],
 			"resource://gre/modules/DownloadUtils.sys.mjs": [
 				"./types/DownloadUtils.d.ts"
-			]
+			],
+			"@components/*": ["./src/apps/fm/components/*"],
+			"@shared/*": ["./src/shared/*"],
+			"@utils/*": ["./src/utils/*"]
 		}
 	}
 }
