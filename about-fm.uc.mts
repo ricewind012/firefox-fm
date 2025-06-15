@@ -5,6 +5,20 @@
 // @include      main
 // ==/UserScript==
 
+declare global {
+	interface Window {
+		/**
+		 * @see https://searchfox.org/mozilla-central/source/browser/base/content/browser.js#4672
+		 */
+		switchToTabHavingURI(
+			aURI: nsIURI,
+			aOpenNew: boolean,
+			aOpenParams?: object,
+			aUserContextId?: string | null,
+		): boolean;
+	}
+}
+
 import { Hotkeys, Utils } from "chrome://userchromejs/content/uc_api.sys.mjs";
 
 const registrar = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
@@ -33,6 +47,9 @@ function generateFreeCID() {
 }
 
 class AboutFM {
+	uri: nsIURI;
+	urlString: string;
+
 	static ABOUT_URL = "about:fm";
 
 	constructor() {
@@ -62,8 +79,7 @@ class AboutFM {
 }
 
 const aboutFm = new AboutFM();
-/** @type nsIFactory */
-const AboutModuleFactory = {
+const AboutModuleFactory: nsIFactory = {
 	createInstance(aIID) {
 		return aboutFm.QueryInterface(aIID);
 	},
@@ -78,7 +94,9 @@ if (aboutFm.urlString) {
 	);
 }
 
-const openFm = () => switchToTabHavingURI(AboutFM.ABOUT_URL, true);
+function openFm() {
+	globalThis.switchToTabHavingURI(AboutFM.ABOUT_URL, true);
+}
 
 Utils.createWidget({
 	id: "open-fm",

@@ -1,3 +1,21 @@
+type XDGBaseDirectory_t =
+	| "XDG_DESKTOP_DIR"
+	| "XDG_DOWNLOAD_DIR"
+	| "XDG_TEMPLATES_DIR"
+	| "XDG_PUBLICSHARE_DIR"
+	| "XDG_DOCUMENTS_DIR"
+	| "XDG_MUSIC_DIR"
+	| "XDG_PICTURES_DIR"
+	| "XDG_VIDEOS_DIR";
+
+export type UserDir_t =
+	| "documents"
+	| "downloads"
+	| "home"
+	| "music"
+	| "pictures"
+	| "videos";
+
 const homeDir = Services.env.get("HOME");
 const configDir =
 	Services.env.get("XDG_CONFIG_HOME") || PathUtils.join(homeDir, ".config");
@@ -11,7 +29,7 @@ const userDirs = userDirsFile
 	.map(([envVar, path]) => ({
 		[envVar]: path.replace(/"/g, "").replace("$HOME", homeDir),
 	}))
-	.reduce((a, b) => Object.assign(a, b));
+	.reduce((a, b) => Object.assign(a, b)) as Record<XDGBaseDirectory_t, string>;
 
 export const newFile = Components.Constructor(
 	"@mozilla.org/file/local;1",
@@ -19,7 +37,7 @@ export const newFile = Components.Constructor(
 	"initWithPath",
 );
 
-export function getFileExtension(path) {
+export function getFileExtension(path: string) {
 	if (!path) {
 		return "";
 	}
@@ -28,7 +46,7 @@ export function getFileExtension(path) {
 	return lastIndex !== -1 ? path.slice(lastIndex + 1).toLowerCase() : "";
 }
 
-export function getPathForName(name) {
+export function getPathForName(name: UserDir_t) {
 	switch (name) {
 		case "home":
 			return homeDir;

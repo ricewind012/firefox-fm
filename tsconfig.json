@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		// TODO: https://www.typescriptlang.org/docs/handbook/declaration-files/dts-from-js.html
+		//"declaration": true,
+		//"declarationMap": true,
+		//"emitDeclarationOnly": true,
+		"experimentalDecorators": true,
+		"useDefineForClassFields": false,
+		"target": "esnext",
+		"module": "esnext",
+		"moduleResolution": "node",
+		"outDir": "dist",
+		"paths": {
+			"chrome://userchromejs/content/uc_api.sys.mjs": [
+				"./node_modules/@types/fx-autoconfig/index.d.ts"
+			],
+			"resource://gre/modules/DownloadUtils.sys.mjs": [
+				"./types/DownloadUtils.d.ts"
+			]
+		}
+	}
+}

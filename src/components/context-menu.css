@@ -1,0 +1,43 @@
+context-menu-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 999;
+}
+
+context-menu {
+	--cm-color: AccentColor;
+	--shadow-size: 24px;
+	--shadow-offset: calc(var(--shadow-size) / 4);
+
+	backdrop-filter: blur(18px);
+	background: color-mix(in srgb, var(--cm-color) 50%, transparent);
+	border: 1px solid var(--cm-color);
+	box-shadow: 0 var(--shadow-offset) var(--shadow-size) rgba(0 0 0 / 0.5);
+	margin-top: var(--spacing-1x);
+
+	flex-direction: column;
+	position: fixed;
+	top: calc(var(--offset-y, -100vh) * 1px);
+	left: calc(var(--offset-x, -100vw) * 1px);
+	min-width: 100px;
+}
+
+context-menu-item {
+	padding: var(--spacing-1x) var(--spacing-2x);
+
+	&:hover {
+		background-color: var(--color-hover);
+	}
+
+	&:active {
+		background-color: var(--color-selected);
+	}
+}
+
+context-menu-separator {
+	--separator-size: 2px;
+
+	background-color: currentColor;
+
+	height: var(--separator-size);
+}

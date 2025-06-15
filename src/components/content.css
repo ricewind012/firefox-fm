@@ -1,0 +1,9 @@
+fm-tabs {
+	overflow: auto;
+	flex-direction: column;
+
+	& > * {
+		flex-direction: column;
+		flex-grow: 1;
+	}
+}

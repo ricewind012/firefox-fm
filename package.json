@@ -1,7 +1,23 @@
 {
+	"type": "module",
+	"scripts": {
+		"build": "npx rollup -c",
+		"build-userscript": "npx tsc --skipLibCheck --target esnext about-fm.uc.mts"
+	},
 	"dependencies": {
-		"@biomejs/biome": "^1.9.0",
+		"@rollup/plugin-node-resolve": "^16.0.1",
+		"@rollup/plugin-typescript": "^12.1.2",
 		"@types/fx-autoconfig": "file:types-fx-autoconfig-1.0.0.tgz",
-		"@types/gecko": "file:types-gecko-1.0.0.tgz"
+		"@types/gecko": "file:types-gecko-1.0.0.tgz",
+		"glob": "^11.0.2",
+		"lit": "^3.3.0",
+		"rollup": "^4.41.1",
+		"rollup-plugin-delete": "^3.0.1",
+		"tslib": "^2.8.1",
+		"typescript": "^5.8.3"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"prettier": "^3.5.3"
 	}
 }

@@ -1,0 +1,30 @@
+fm-icon {
+	background-image: var(--icon);
+	background-size: var(--icon-size);
+
+	flex-shrink: 0;
+	width: var(--icon-size);
+	height: var(--icon-size);
+}
+
+fm-icon-button {
+	padding: var(--spacing-1x);
+
+	align-items: center;
+
+	&:hover {
+		background-color: var(--color-hover);
+	}
+
+	&:active {
+		background-color: var(--color-selected);
+	}
+}
+
+fm-text {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	user-select: none;
+}

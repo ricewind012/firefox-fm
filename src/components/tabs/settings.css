@@ -1,0 +1,25 @@
+pref-group {
+	gap: var(--spacing-1x);
+
+	flex-direction: column;
+
+	&:not(:last-of-type) {
+		border-bottom: var(--separator-size) solid var(--fg);
+		padding-bottom: var(--spacing-2x);
+		margin-bottom: var(--spacing-2x);
+	}
+}
+
+pref-group-header {
+	flex-direction: column;
+	/* lol */
+	order: -1;
+
+	& > :first-child {
+		font-size: large;
+	}
+
+	& > :last-child {
+		opacity: 0.5;
+	}
+}
