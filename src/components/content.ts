@@ -35,12 +35,6 @@ export interface TabItem {
 @customElement("fm-tabs")
 export class TabsContainer extends CBaseElement {
 	/**
-	 * Used to change paths across tabs.
-	 * @todo is this of any use lol
-	 */
-	@property({ type: String }) path = "";
-
-	/**
 	 * Used for:
 	 * - `<fm-app>` render with last used tab
 	 * - sidebar items to indicate if they're currently selected
@@ -71,7 +65,7 @@ export class TabsContainer extends CBaseElement {
 
 				return html`
 					<fm-tab-dirs name=${tab.name} ?hidden=${tab.name !== selectedTab}>
-						<fm-path-header .path=${path}></fm-path-header>
+						<fm-path-header path=${path}></fm-path-header>
 						<fm-file-row-info-container>
 							<div></div>
 							<fm-text>Name</fm-text>

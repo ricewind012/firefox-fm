@@ -31,12 +31,14 @@ class FileRow extends CBaseElement {
 	@state() file: nsIFile = null;
 
 	m_bIsFile: boolean;
+	m_elPathHeader: PathHeader;
 	m_elTab: DirTab;
 	m_pActions: FileActions;
 
 	connectedCallback() {
 		super.connectedCallback();
 		this.m_bIsFile = this.file.isFile();
+		this.m_elPathHeader = document.querySelector("fm-path-header");
 		this.m_elTab = this.closest("fm-tab-dirs") as unknown as DirTab;
 		this.m_pActions = new FileActions(this.file);
 	}
@@ -45,7 +47,9 @@ class FileRow extends CBaseElement {
 		if (this.m_bIsFile) {
 			this.m_pActions.open();
 		} else {
-			this.m_elTab.ChangePath(this.file.path);
+			const { path } = this.file;
+			this.m_elPathHeader.path = path;
+			this.m_elTab.ChangePath(path);
 		}
 	}
 
@@ -122,6 +126,7 @@ class PathHeader extends CBaseElement {
 	m_elSelectedTab: DirTab;
 
 	connectedCallback() {
+		super.connectedCallback();
 		this.m_elSelectedTab = this.parentElement as unknown as DirTab;
 	}
 
@@ -130,8 +135,6 @@ class PathHeader extends CBaseElement {
 		const dirs: { fileName: string; path: string }[] = [];
 
 		while (path) {
-			// TODO: somehow "asd" appears?????????????????????/ wtf is this
-			//console.log("fm-path-header: %o", path);
 			const fileName = PathUtils.filename(path);
 			if (!path) {
 				continue;
@@ -150,8 +153,8 @@ class PathHeader extends CBaseElement {
 		return html`
 			${dirs.map(({ path, fileName }) => {
 				function onClick() {
+					this.path = path;
 					this.m_elSelectedTab.ChangePath(path);
-					console.log("fm-path-part path = %o", path);
 				}
 
 				return html`
@@ -165,9 +168,8 @@ class PathHeader extends CBaseElement {
 @customElement("fm-tab-dirs")
 export class DirTab extends CBaseTab {
 	@property({ type: String }) path = "";
+	@query("fm-path-header", true) m_elPathHeader: PathHeader;
 	@state() m_vecFiles: nsIFile[];
-
-	@query("fm-path-header") m_elPathHeader: PathHeader;
 
 	connectedCallback() {
 		super.connectedCallback();
@@ -178,7 +180,7 @@ export class DirTab extends CBaseTab {
 	ChangePath(strPath: string) {
 		const pDir = newFile(strPath);
 		this.m_vecFiles = [...pDir.directoryEntries];
-		this.m_elPathHeader.path = strPath;
+		//this.m_elPathHeader.path = strPath;
 	}
 
 	render() {

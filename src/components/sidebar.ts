@@ -18,7 +18,7 @@ declare global {
 class SidebarItem extends CBaseElement {
 	@property({ type: Object }) item: TabItem = null;
 	@property({ type: Boolean }) selected = false;
-	@query("context-menu") menu: ContextMenu;
+	@query("context-menu", true) menu: ContextMenu;
 
 	connectedCallback() {
 		super.connectedCallback();
@@ -28,7 +28,7 @@ class SidebarItem extends CBaseElement {
 
 	contextMenuTemplate() {
 		return html`
-			<context-menu parent-name="fm-sidebar-item">
+			<context-menu>
 				<context-menu-item
 					text="Open"
 					@click=${this.onClick}
@@ -41,7 +41,7 @@ class SidebarItem extends CBaseElement {
 		this.menu.show(ev);
 	}
 
-	onClick(ev: ClickEvent<SidebarItem>) {
+	onClick() {
 		const { item } = this;
 		const tabsContainer = document.querySelector("fm-tabs");
 		const { selectedTab } = tabsContainer;
@@ -50,13 +50,10 @@ class SidebarItem extends CBaseElement {
 		}
 
 		tabsContainer.ChangeVisibleTab(item.name);
-
-		// TODO: wtf is this shit
 		document
 			.querySelector<SidebarItem>("fm-sidebar-item[selected]")
 			.removeAttribute("selected");
-		const target = ev.target.closest("fm-sidebar-item");
-		target.setAttribute("selected", "true");
+		this.selected = true;
 	}
 
 	render() {
