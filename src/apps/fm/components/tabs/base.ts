@@ -1,6 +1,6 @@
 import { property } from "lit/decorators.js";
 
-import { CBaseElement } from "../../utils/lit";
+import { CBaseElement } from "@utils/lit";
 
 import type { TabsContainer } from "../content";
 

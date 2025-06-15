@@ -1,5 +1,6 @@
-about-fm.uc.mjs
+about-life.uc.mjs
 dist
+dist_userscripts
 
 node_modules
 external_types

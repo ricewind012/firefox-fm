@@ -1,9 +1,11 @@
 // ==UserScript==
-// @name         about:file-manager
-// @description  A page for the file manager.
+// @name         about:life
+// @description  A page for the apps.
 // @author       me
 // @include      main
 // ==/UserScript==
+
+import { Hotkeys, Utils } from "chrome://userchromejs/content/uc_api.sys.mjs";
 
 declare global {
 	interface Window {
@@ -14,12 +16,10 @@ declare global {
 			aURI: nsIURI,
 			aOpenNew: boolean,
 			aOpenParams?: object,
-			aUserContextId?: string | null,
+			aUserContextId?: string,
 		): boolean;
 	}
 }
-
-import { Hotkeys, Utils } from "chrome://userchromejs/content/uc_api.sys.mjs";
 
 const registrar = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
 const chromeRegistry = Cc["@mozilla.org/chrome/chrome-registry;1"].getService(
@@ -29,8 +29,13 @@ const fphs = Cc["@mozilla.org/network/protocol;1?name=file"].getService(
 	Ci.nsIFileProtocolHandler,
 );
 
-function findResources() {
-	const url = "chrome://userchrome/content/firefox-fm/src/page/fm.html";
+/**
+ * @todo "fm" only for now, but:
+ * 1. use about:life as a start page using hashes ?
+ * 2. do about:life-{fm,other-app,etc} ?
+ */
+function findResources(strAppName: string) {
+	const url = `chrome://userchrome/content/firefox-fm/src/apps/${strAppName}/page/index.html`;
 	const uri = Services.io.newURI(url);
 	const fileUri = chromeRegistry.convertChromeURL(uri);
 	const file = fphs.getFileFromURLSpec(fileUri.spec).QueryInterface(Ci.nsIFile);
@@ -46,14 +51,14 @@ function generateFreeCID() {
 	return uuid;
 }
 
-class AboutFM {
+class CAboutLife {
 	uri: nsIURI;
 	urlString: string;
 
-	static ABOUT_URL = "about:fm";
+	static s_strAboutURL = "about:life";
 
 	constructor() {
-		this.urlString = findResources();
+		this.urlString = findResources("fm");
 		this.uri = Services.io.newURI(this.urlString);
 	}
 
@@ -78,37 +83,35 @@ class AboutFM {
 	}
 }
 
-const aboutFm = new AboutFM();
+const aboutLife = new CAboutLife();
 const AboutModuleFactory: nsIFactory = {
 	createInstance(aIID) {
-		return aboutFm.QueryInterface(aIID);
+		return aboutLife.QueryInterface(aIID);
 	},
 	QueryInterface: ChromeUtils.generateQI(["nsIFactory"]),
 };
-if (aboutFm.urlString) {
-	registrar.registerFactory(
-		generateFreeCID(),
-		AboutFM.ABOUT_URL,
-		"@mozilla.org/network/protocol/about;1?what=fm",
-		AboutModuleFactory,
-	);
-}
+registrar.registerFactory(
+	generateFreeCID(),
+	CAboutLife.s_strAboutURL,
+	"@mozilla.org/network/protocol/about;1?what=life",
+	AboutModuleFactory,
+);
 
-function openFm() {
-	globalThis.switchToTabHavingURI(AboutFM.ABOUT_URL, true);
+function OpenLifeApps() {
+	globalThis.switchToTabHavingURI(CAboutLife.s_strAboutURL, true);
 }
 
 Utils.createWidget({
-	id: "open-fm",
+	id: "open-life-apps-page",
 	type: "toolbarbutton",
 	image: "chrome://browser/skin/window.svg",
-	label: "Open FM",
-	callback: openFm,
+	label: "Open the apps page",
+	callback: OpenLifeApps,
 });
 
 Hotkeys.define({
-	id: "key_openAboutFM",
+	id: "key_openAboutLife",
 	modifiers: "accel alt",
 	key: "S",
-	command: openFm,
+	command: OpenLifeApps,
 });

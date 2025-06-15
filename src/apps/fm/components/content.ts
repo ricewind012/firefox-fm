@@ -1,8 +1,8 @@
 import { html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
-import { getPathForName, type UserDir_t } from "../utils/file";
-import { CBaseElement } from "../utils/lit";
+import { getPathForName, type UserDir_t } from "@utils/file";
+import { CBaseElement } from "@utils/lit";
 
 import type { CBaseTab } from "./tabs/base";
 import "./tabs/dir";
@@ -68,9 +68,9 @@ export class TabsContainer extends CBaseElement {
 						<fm-path-header path=${path}></fm-path-header>
 						<fm-file-row-info-container>
 							<div></div>
-							<fm-text>Name</fm-text>
-							<fm-text>Date</fm-text>
-							<fm-text>Size</fm-text>
+							<life-text>Name</life-text>
+							<life-text>Date</life-text>
+							<life-text>Size</life-text>
 						</fm-file-row-info-container>
 					</fm-tab-dirs>
 				`;

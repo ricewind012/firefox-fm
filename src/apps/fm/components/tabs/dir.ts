@@ -8,13 +8,13 @@ import {
 	getPathForName,
 	newFile,
 	type UserDir_t,
-} from "../../utils/file";
-import { CBaseElement } from "../../utils/lit";
-import type { ClickEvent } from "../../utils/types";
+} from "@utils/file";
+import { CBaseElement } from "@utils/lit";
+import type { ClickEvent } from "@utils/types";
 
 import { CBaseTab } from "./base";
-import type { ContextMenu } from "../context-menu";
-import { FileActions } from "../../file-actions";
+import type { ContextMenu } from "@shared/components/contextmenu";
+import { FileActions } from "@shared/fileactions";
 
 declare global {
 	interface HTMLElementTagNameMap {
@@ -81,7 +81,7 @@ class FileRow extends CBaseElement {
 					<img src="moz-icon://.${extension}?size=16}" />
 				`
 			: html`
-					<fm-icon name="folder"></fm-icon>
+					<life-icon name="folder"></life-icon>
 				`;
 
 		return html`
@@ -90,20 +90,20 @@ class FileRow extends CBaseElement {
 				@dblclick=${this.open}
 			>
 				${icon}
-				<fm-text>${displayName}</fm-text>
-				<fm-text>${date}</fm-text>
-				<fm-text>
+				<life-text>${displayName}</life-text>
+				<life-text>${date}</life-text>
+				<life-text>
 					${this.m_bIsFile
 						? html`
 								${bytes} ${unit}
 							`
 						: ""}
-				</fm-text>
+				</life-text>
 			</fm-file-row-info-container>
-			<fm-icon-button @click=${this.onContextMenu}>
-				<fm-icon name="view-more-horizontal"></fm-icon>
+			<life-icon-button @click=${this.onContextMenu}>
+				<life-icon name="view-more-horizontal"></life-icon>
 				${this.contextMenuTemplate()}
-			</fm-icon-button>
+			</life-icon-button>
 		`;
 	}
 }
@@ -114,7 +114,7 @@ class PathPart extends CBaseElement {
 
 	render() {
 		return html`
-			<fm-text>${this.name}</fm-text>
+			<life-text>${this.name}</life-text>
 		`;
 	}
 }

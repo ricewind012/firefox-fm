@@ -1,0 +1,32 @@
+@import url("./components/contextmenu.css");
+@import url("./components/shared.css");
+
+:root {
+	--bg: Canvas;
+	--fg: CanvasText;
+
+	--color-hover: color-mix(in srgb, currentColor 10%, transparent);
+	--color-selected: color-mix(in srgb, currentColor 25%, transparent);
+
+	/* Can't go above 16px. Weird, isn't -symbolic svg ? */
+	--icon-size: 16px;
+
+	--spacing-05x: 4px;
+	--spacing-1x: 8px;
+	--spacing-2x: 16px;
+	--spacing-3x: 24px;
+}
+
+body {
+	background-color: var(--bg);
+	color: var(--fg);
+	font-family: system-ui;
+	margin: 0;
+
+	display: flex;
+	height: 100vh;
+
+	:where(:not([hidden])) {
+		display: flex;
+	}
+}

@@ -1,14 +1,14 @@
 import { html } from "lit";
 import { customElement } from "lit/decorators.js";
 
-import { getPathForName, type UserDir_t } from "../utils/file";
-import { CBaseElement } from "../utils/lit";
+import { getPathForName, type UserDir_t } from "@utils/file";
+import { CBaseElement } from "@utils/lit";
 
 import type { TabItem } from "../components/content";
 
 import "../components/content";
-import "../components/context-menu";
-import "../components/shared";
+import "@shared/components/contextmenu";
+import "@shared/components/shared";
 import "../components/sidebar";
 
 declare global {

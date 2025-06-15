@@ -2,10 +2,10 @@ import { html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
 import type { TabItem } from "./content";
-import type { ContextMenu } from "./context-menu";
+import type { ContextMenu } from "@shared/components/contextmenu";
 
-import { CBaseElement } from "../utils/lit";
-import type { ClickEvent } from "../utils/types";
+import { CBaseElement } from "@utils/lit";
+import type { ClickEvent } from "@utils/types";
 
 declare global {
 	interface HTMLElementTagNameMap {
@@ -60,8 +60,8 @@ class SidebarItem extends CBaseElement {
 		const { name, text } = this.item;
 
 		return html`
-			<fm-icon name=${name}></fm-icon>
-			<fm-text>${text}</fm-text>
+			<life-icon name=${name}></life-icon>
+			<life-text>${text}</life-text>
 
 			${this.contextMenuTemplate()}
 		`;

@@ -3,11 +3,11 @@ import { customElement, property } from "lit/decorators.js";
 
 import * as UC_API from "chrome://userchromejs/content/uc_api.sys.mjs";
 
-import { CBaseElement } from "../../utils/lit";
-import type { ClickEvent } from "../../utils/types";
+import { CBaseElement } from "@utils/lit";
+import type { ClickEvent } from "@utils/types";
 
 import { CBaseTab } from "./base";
-import { type Pref, prefs } from "../../prefs";
+import { type Pref, prefs } from "@shared/prefs";
 
 declare global {
 	interface HTMLElementTagNameMap {
@@ -29,8 +29,8 @@ class PrefGroup extends CBaseElement {
 
 		return html`
 			<pref-group-header>
-				<fm-text>${label}</fm-text>
-				<fm-text>${description}</fm-text>
+				<life-text>${label}</life-text>
+				<life-text>${description}</life-text>
 			</pref-group-header>
 		`;
 	}
@@ -66,8 +66,8 @@ class PrefRow extends CBaseElement {
 		const { pref } = this;
 
 		return html`
-			<fm-text>${pref.label}</fm-text>
-			<fm-text>${pref.description}</fm-text>
+			<life-text>${pref.label}</life-text>
+			<life-text>${pref.description}</life-text>
 			${this.controlTemplate()}
 		`;
 	}
