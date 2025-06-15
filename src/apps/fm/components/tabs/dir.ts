@@ -3,6 +3,8 @@ import { customElement, property, query, state } from "lit/decorators.js";
 
 import { DownloadUtils } from "resource://gre/modules/DownloadUtils.sys.mjs";
 
+import type { ContextMenu } from "@shared/components/contextmenu";
+import { FileActions } from "@shared/fileactions";
 import {
 	getFileExtension,
 	getPathForName,
@@ -13,8 +15,6 @@ import { CBaseElement } from "@utils/lit";
 import type { ClickEvent } from "@utils/types";
 
 import { CBaseTab } from "./base";
-import type { ContextMenu } from "@shared/components/contextmenu";
-import { FileActions } from "@shared/fileactions";
 
 declare global {
 	interface HTMLElementTagNameMap {

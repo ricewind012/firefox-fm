@@ -4,7 +4,6 @@
 // @author       me
 // @include      main
 // ==/UserScript==
-
 import { Hotkeys, Utils } from "chrome://userchromejs/content/uc_api.sys.mjs";
 
 declare global {

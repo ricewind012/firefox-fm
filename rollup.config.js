@@ -25,7 +25,6 @@ export default {
 	),
 	output: {
 		dir: "dist",
-		//format: "es",
 	},
 	plugins: [
 		del({

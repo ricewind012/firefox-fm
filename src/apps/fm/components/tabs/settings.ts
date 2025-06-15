@@ -3,11 +3,11 @@ import { customElement, property } from "lit/decorators.js";
 
 import * as UC_API from "chrome://userchromejs/content/uc_api.sys.mjs";
 
+import { type Pref, prefs } from "@shared/prefs";
 import { CBaseElement } from "@utils/lit";
 import type { ClickEvent } from "@utils/types";
 
 import { CBaseTab } from "./base";
-import { type Pref, prefs } from "@shared/prefs";
 
 declare global {
 	interface HTMLElementTagNameMap {
