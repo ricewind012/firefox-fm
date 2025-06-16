@@ -1,7 +1,9 @@
 {
 	"type": "module",
 	"scripts": {
-		"build": "npx rollup -c"
+		"build": "npx rollup -c",
+		"postinstall": "npx patch-package",
+		"watch": "npx rollup -cw"
 	},
 	"dependencies": {
 		"@rollup/plugin-node-resolve": "^16.0.1",

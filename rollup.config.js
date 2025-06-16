@@ -1,10 +1,11 @@
+// sort-imports-ignore: order - other, rollup plugins
 import { globSync } from "glob";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import del from "rollup-plugin-delete";
-import typescript from "@rollup/plugin-typescript";
 import nodeResolve from "@rollup/plugin-node-resolve";
+import typescript from "@rollup/plugin-typescript";
 
 /** @type {import("rollup").RollupOptions} */
 export default {
@@ -25,7 +26,9 @@ export default {
 	),
 	output: {
 		dir: "dist",
+		entryFileNames: "[name].js",
 	},
+	external: /^(chrome|moz-src|resource):\/\//,
 	plugins: [
 		del({
 			targets: ["dist"],
