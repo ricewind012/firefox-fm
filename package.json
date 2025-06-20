@@ -1,10 +1,4 @@
 {
-	"type": "module",
-	"scripts": {
-		"build": "npx rollup -c",
-		"postinstall": "npx patch-package",
-		"watch": "npx rollup -cw"
-	},
 	"dependencies": {
 		"@rollup/plugin-node-resolve": "^16.0.1",
 		"@rollup/plugin-typescript": "^12.1.2",
@@ -18,8 +12,13 @@
 		"typescript": "^5.8.3"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.9.4",
-		"@trivago/prettier-plugin-sort-imports": "^5.2.2",
+		"@biomejs/biome": "2.0.0",
 		"prettier": "^3.5.3"
-	}
+	},
+	"scripts": {
+		"build": "npx rollup -c",
+		"postinstall": "npx patch-package",
+		"watch": "npx rollup -cw"
+	},
+	"type": "module"
 }

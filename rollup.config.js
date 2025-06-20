@@ -1,4 +1,10 @@
-// sort-imports-ignore: order - other, rollup plugins
+/**
+ * biome-ignore-all assist/source/organizeImports: special sorting just because:
+ *
+ * 1. glob/node
+ * 2. rollup plugins
+ */
+
 import { globSync } from "glob";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,6 +15,7 @@ import typescript from "@rollup/plugin-typescript";
 
 /** @type {import("rollup").RollupOptions} */
 export default {
+	external: /^(chrome|moz-src|resource):\/\//,
 	input: Object.fromEntries(
 		globSync("src/**/*.ts")
 			.filter((e) => !e.startsWith("src/userscripts"))
@@ -28,7 +35,6 @@ export default {
 		dir: "dist",
 		entryFileNames: "[name].js",
 	},
-	external: /^(chrome|moz-src|resource):\/\//,
 	plugins: [
 		del({
 			targets: ["dist"],

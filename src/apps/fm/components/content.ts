@@ -1,8 +1,8 @@
 import { html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
-import { getPathForName, type UserDir_t } from "@utils/file";
-import { CBaseElement } from "@utils/lit";
+import { getPathForName, type UserDir_t } from "@/utils/file";
+import { CBaseElement } from "@/utils/lit";
 
 import type { CBaseTab } from "./tabs/base";
 import "./tabs/dir";
@@ -39,7 +39,7 @@ export class TabsContainer extends CBaseElement {
 	 * - `<fm-app>` render with last used tab
 	 * - sidebar items to indicate if they're currently selected
 	 */
-	@property({ type: String, attribute: true }) selectedTab = "";
+	@property({ attribute: true, type: String }) selectedTab = "";
 
 	@property({ type: Array }) tabs: TabItem[] = [];
 

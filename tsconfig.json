@@ -1,22 +1,20 @@
 {
 	"compilerOptions": {
 		"experimentalDecorators": true,
-		"useDefineForClassFields": false,
-		"target": "esnext",
 		"module": "esnext",
 		"moduleResolution": "node",
 		"outDir": "dist",
 		"paths": {
+			"@/*": ["./src/*"],
 			"chrome://userchromejs/content/uc_api.sys.mjs": [
 				"./node_modules/@types/fx-autoconfig/index.d.ts"
 			],
-			"resource://gre/modules/*": ["./types/*"],
 			"resource:///modules/PanelMultiView.sys.mjs": [
 				"./types/PanelMultiView.d.ts"
 			],
-			"@components/*": ["./src/apps/fm/components/*"],
-			"@shared/*": ["./src/shared/*"],
-			"@utils/*": ["./src/utils/*"]
-		}
+			"resource://gre/modules/*": ["./types/*"]
+		},
+		"target": "esnext",
+		"useDefineForClassFields": false
 	}
 }

@@ -7,7 +7,7 @@
 import { Hotkeys, Utils } from "chrome://userchromejs/content/uc_api.sys.mjs";
 import { PanelMultiView } from "resource:///modules/PanelMultiView.sys.mjs";
 
-import type { App_t, ClickEvent } from "@utils/types";
+import type { App_t, ClickEvent } from "@/utils/types";
 
 declare global {
 	const MozXULElement: {
@@ -126,8 +126,8 @@ class CPanelView {
 		CPanelView.s_elPopupSet.appendChild(MozXULElement.parseXULToFragment(xul));
 		globalThis.widget = Utils.createWidget({
 			...widget,
-			id,
 			callback: (ev: ClickEvent<XULPopupElement>) => this.OnClick(ev),
+			id,
 		});
 		this.m_elPanel = document.getElementById(id) as XULPopupElement;
 	}
@@ -164,8 +164,8 @@ const panel = new CPanelView(
 	PANEL_ID,
 	CPanelView.CreatePanelMarkup(PANEL_ID, "LiFE Info", strAppsMarkup),
 	{
-		type: "toolbarbutton",
 		image: "chrome://browser/skin/window.svg",
+		type: "toolbarbutton",
 	},
 );
 
@@ -177,9 +177,9 @@ for (const app of APP_LIST) {
 }
 
 const key = Hotkeys.define({
-	id: "key_openLifePanel",
-	modifiers: "ctrl alt",
-	key: "S",
 	command: (_wnd, ev) => panel.Show(ev),
+	id: "key_openLifePanel",
+	key: "S",
+	modifiers: "ctrl alt",
 });
 await key.autoAttach();

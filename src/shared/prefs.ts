@@ -31,8 +31,8 @@ export const PREF_DISPLAY_DIRS_FIRST = "fm.general.dirs-first";
 
 export const prefs: PrefGroup[] = [
 	{
-		label: "General",
 		description: "aka unsorted",
+		label: "General",
 		opts: [
 			{
 				label: "Display directories first",

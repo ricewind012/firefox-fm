@@ -1,8 +1,8 @@
 import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import { CBaseElement } from "@utils/lit";
-import type { ClickEvent } from "@utils/types";
+import { CBaseElement } from "@/utils/lit";
+import type { ClickEvent } from "@/utils/types";
 
 declare global {
 	interface HTMLElementTagNameMap {

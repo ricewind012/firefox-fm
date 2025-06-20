@@ -1,9 +1,9 @@
 import { html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
-import type { ContextMenu } from "@shared/components/contextmenu";
-import { CBaseElement } from "@utils/lit";
-import type { ClickEvent } from "@utils/types";
+import type { ContextMenu } from "@/shared/components/contextmenu";
+import { CBaseElement } from "@/utils/lit";
+import type { ClickEvent } from "@/utils/types";
 
 import type { TabItem } from "./content";
 
