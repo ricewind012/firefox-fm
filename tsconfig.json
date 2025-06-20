@@ -11,6 +11,9 @@
 				"./node_modules/@types/fx-autoconfig/index.d.ts"
 			],
 			"resource://gre/modules/*": ["./types/*"],
+			"resource:///modules/PanelMultiView.sys.mjs": [
+				"./types/PanelMultiView.d.ts"
+			],
 			"@components/*": ["./src/apps/fm/components/*"],
 			"@shared/*": ["./src/shared/*"],
 			"@utils/*": ["./src/utils/*"]
