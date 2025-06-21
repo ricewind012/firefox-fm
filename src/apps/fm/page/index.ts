@@ -4,7 +4,7 @@ import { customElement } from "lit/decorators.js";
 import "@/shared/components/contextmenu";
 import "@/shared/components/shared";
 
-import { getPathForName, type UserDir_t } from "@/utils/file";
+import { GetPathForName, type UserDir_t } from "@/utils/file";
 import { CBaseElement } from "@/utils/lit";
 
 import type { TabItem } from "../components/content";
@@ -17,7 +17,7 @@ declare global {
 	}
 }
 
-const vecTopItems: TabItem[] = [
+const TOP_ITEMS: TabItem[] = [
 	{ name: "home", text: "Home" },
 	{ name: "documents", text: "Documents" },
 	{ name: "downloads", text: "Downloads" },
@@ -28,20 +28,19 @@ const vecTopItems: TabItem[] = [
 	//{ name: "separator", type: "separator" },
 	{ name: "root", text: "File System" },
 ];
-const vecBottomItems: TabItem[] = [{ name: "settings", text: "Settings" }];
-const vecAllTabs = [...vecTopItems, ...vecBottomItems];
+const BOTTOM_ITEMS: TabItem[] = [{ name: "settings", text: "Settings" }];
 
 @customElement("fm-app")
 class CFMApp extends CBaseElement {
-	static DEFAULT_TAB: UserDir_t = "home";
+	static readonly DEFAULT_TAB: UserDir_t = "home";
 
-	render() {
-		const path = getPathForName(CFMApp.DEFAULT_TAB);
+	override render() {
+		const path = GetPathForName(CFMApp.DEFAULT_TAB);
 
 		return html`
 			<fm-sidebar
-				.topItems=${vecTopItems}
-				.bottomItems=${vecBottomItems}
+				.topItems=${TOP_ITEMS}
+				.bottomItems=${BOTTOM_ITEMS}
 			></fm-sidebar>
 			<fm-content>
 				<!-- Only top tabs are intended for usage with the <fm-tabs>
@@ -49,7 +48,7 @@ class CFMApp extends CBaseElement {
 				<fm-tabs
 					path=${path}
 					selectedTab=${CFMApp.DEFAULT_TAB}
-					.tabs=${vecTopItems}
+					.tabs=${TOP_ITEMS}
 				></fm-tabs>
 			</fm-content>
 		`;

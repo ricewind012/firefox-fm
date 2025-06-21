@@ -1,7 +1,7 @@
 import { html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
-import { getPathForName, type UserDir_t } from "@/utils/file";
+import { GetPathForName, type UserDir_t } from "@/utils/file";
 import { CBaseElement } from "@/utils/lit";
 
 import type { CBaseTab } from "./tabs/base";
@@ -11,7 +11,7 @@ import "./tabs/settings";
 declare global {
 	interface HTMLElementTagNameMap {
 		"fm-content": HTMLElement;
-		"fm-tabs": TabsContainer;
+		"fm-tabs": CTabsContainer;
 	}
 }
 
@@ -33,7 +33,7 @@ export interface TabItem {
 }
 
 @customElement("fm-tabs")
-export class TabsContainer extends CBaseElement {
+export class CTabsContainer extends CBaseElement {
 	/**
 	 * Used for:
 	 * - `<fm-app>` render with last used tab
@@ -56,12 +56,12 @@ export class TabsContainer extends CBaseElement {
 		return this.querySelector<T>(`:scope > [name="${strName}"]`);
 	}
 
-	render() {
+	override render() {
 		const { tabs, selectedTab } = this;
 
 		return html`
 			${tabs.map((tab) => {
-				const path = getPathForName(tab.name as UserDir_t);
+				const path = GetPathForName(tab.name as UserDir_t);
 
 				return html`
 					<fm-tab-dirs name=${tab.name} ?hidden=${tab.name !== selectedTab}>

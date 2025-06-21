@@ -13,3 +13,5 @@
 Building is a simple `npm i && npm run build`.
 
 The only patch for lit is based on [this one from Mozilla](https://searchfox.org/mozilla-central/source/toolkit/content/vendor/lit/0002-use-DOMParser-not-innerHTML.patch).
+
+Biome is used for linting and sorting imports, keys, etc. and Prettier for formatting since Biome [doesn't support](https://github.com/biomejs/biome/issues/3334) embedded languages yet.

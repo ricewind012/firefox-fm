@@ -25,7 +25,67 @@
 		"rules": {
 			"style": {
 				"noDescendingSpecificity": "off",
-				"useEnumInitializers": "off"
+				"useEnumInitializers": "off",
+				"useNamingConvention": {
+					"level": "on",
+					"options": {
+						"conventions": [
+							{
+								"match": "(.+)_t",
+								"selector": {
+									"kind": "typeAlias"
+								}
+							},
+							{
+								"match": "E(.+)",
+								"selector": {
+									"kind": "enum"
+								}
+							},
+							{
+								"formats": ["PascalCase"],
+								"selector": {
+									"kind": "enumMember"
+								}
+							},
+							{
+								"match": "C(.+)",
+								"selector": {
+									"kind": "class"
+								}
+							},
+							{
+								"formats": ["CONSTANT_CASE"],
+								"selector": {
+									"kind": "classProperty",
+									"modifiers": ["static", "readonly"]
+								}
+							},
+							{
+								"formats": ["PascalCase"],
+								"selector": {
+									"kind": "classMethod"
+								}
+							},
+							{
+								"formats": ["PascalCase"],
+								"selector": {
+									"kind": "function"
+								}
+							},
+							{
+								"formats": ["camelCase", "CONSTANT_CASE"],
+								"selector": {
+									"kind": "variable"
+								}
+							},
+							{
+								"match": ".*"
+							}
+						],
+						"strictCase": false
+					}
+				}
 			},
 			"suspicious": {
 				"noExplicitAny": "off"

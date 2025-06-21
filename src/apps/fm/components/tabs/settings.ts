@@ -2,27 +2,29 @@ import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import * as UC_API from "chrome://userchromejs/content/uc_api.sys.mjs";
+
 import { type Pref, prefs } from "@/shared/prefs";
 import { CBaseElement } from "@/utils/lit";
 import type { ClickEvent } from "@/utils/types";
+
 import { CBaseTab } from "./base";
 
 declare global {
 	interface HTMLElementTagNameMap {
-		"fm-tab-settings": SettingsTab;
-		"pref-group": PrefGroup;
-		"pref-row": PrefRow;
+		"fm-tab-settings": CSettingsTab;
+		"pref-group": CPrefGroup;
+		"pref-row": CPrefRow;
 	}
 }
 
 const { PREF_BOOL, PREF_INT, PREF_STRING } = Services.prefs;
 
 @customElement("pref-group")
-class PrefGroup extends CBaseElement {
+class CPrefGroup extends CBaseElement {
 	@property({ type: String }) description = "";
 	@property({ type: String }) label = "";
 
-	render() {
+	override render() {
 		const { description, label } = this;
 
 		return html`
@@ -35,45 +37,45 @@ class PrefGroup extends CBaseElement {
 }
 
 @customElement("pref-row")
-class PrefRow extends CBaseElement {
+class CPrefRow extends CBaseElement {
 	@property({ type: Object }) pref: Pref;
 
-	controlTemplate() {
+	ControlTemplate() {
 		const { pref } = this;
 		const { value } = UC_API.Prefs.get(pref.name);
 
 		switch (pref.type) {
 			case PREF_BOOL:
 				return html`
-					<input type="checkbox" ?checked=${value} @change=${this.onChange} />
+					<input type="checkbox" ?checked=${value} @change=${this.OnChange} />
 				`;
 
 			case PREF_INT:
 			case PREF_STRING:
 				return html`
-					<input @input=${this.onChange} />
+					<input @input=${this.OnChange} />
 				`;
 		}
 	}
 
-	onChange(ev: ClickEvent<HTMLInputElement>) {
+	OnChange(ev: ClickEvent<HTMLInputElement>) {
 		console.log("VALUE FOR %o IS %o", ev.target, ev.target.value);
 	}
 
-	render() {
+	override render() {
 		const { pref } = this;
 
 		return html`
 			<life-text>${pref.label}</life-text>
 			<life-text>${pref.description}</life-text>
-			${this.controlTemplate()}
+			${this.ControlTemplate()}
 		`;
 	}
 }
 
 @customElement("fm-tab-settings")
-export class SettingsTab extends CBaseTab {
-	optionsTemplate() {
+export class CSettingsTab extends CBaseTab {
+	OptionsTemplate() {
 		return prefs.map(
 			({ label, description, opts }) => html`
 				<pref-group label=${label} description=${description}>
@@ -87,9 +89,9 @@ export class SettingsTab extends CBaseTab {
 		);
 	}
 
-	render() {
+	override render() {
 		return html`
-			${this.optionsTemplate()}
+			${this.OptionsTemplate()}
 		`;
 	}
 }

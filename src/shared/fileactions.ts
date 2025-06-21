@@ -1,18 +1,18 @@
 /**
  * File actions wrapper class, maybe for future prompt usage...
  */
-export class FileActions {
-	file: nsIFile;
+export class CFileActions {
+	m_pFile: nsIFile;
 
 	constructor(file: nsIFile) {
-		this.file = file;
+		this.m_pFile = file;
 	}
 
-	delete() {
-		this.file.remove(false);
+	Delete() {
+		this.m_pFile.remove(false);
 	}
 
-	open() {
-		this.file.launch();
+	Open() {
+		this.m_pFile.launch();
 	}
 }

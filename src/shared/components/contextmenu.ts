@@ -6,8 +6,8 @@ import type { ClickEvent } from "@/utils/types";
 
 declare global {
 	interface HTMLElementTagNameMap {
-		"context-menu": ContextMenu;
-		"context-menu-item": ContextMenuItem;
+		"context-menu": CContextMenu;
+		"context-menu-item": CContextMenuItem;
 		//"context-menu-overlay": ContextMenuOverlay;
 		"context-menu-separator": HTMLElement;
 	}
@@ -40,13 +40,13 @@ class ContextMenuOverlay extends HTMLElement {
  * the document/window events fire when I do literally anything.
  */
 @customElement("context-menu")
-export class ContextMenu extends HTMLElement {
+export class CContextMenu extends HTMLElement {
 	//overlay = this.parentElement as ContextMenuOverlay;
 	/** @todo Use element ref maybe ? */
 	//parentTag = this.getAttribute("parent-name") as keyof HTMLElementTagNameMap;
 
-	connectedCallback() {
-		this.hide();
+	override connectedCallback() {
+		this.Hide();
 		/*
 		console.assert(
 			this.overlay.localName === "context-menu-overlay",
@@ -57,17 +57,17 @@ export class ContextMenu extends HTMLElement {
 		document.addEventListener("mouseup", (ev: MouseEvent) => {
 			// only catch left click
 			if (ev.which === 1) {
-				this.hide();
+				this.Hide();
 			}
 		});
 		window.addEventListener("keydown", (ev: KeyboardEvent) => {
 			if (ev.key === "Escape") {
-				this.hide();
+				this.Hide();
 			}
 		});
 	}
 
-	show(ev: ClickEvent) {
+	Show(ev: ClickEvent) {
 		ev.preventDefault();
 
 		/*
@@ -82,17 +82,17 @@ export class ContextMenu extends HTMLElement {
 		this.hidden = false;
 	}
 
-	hide() {
+	Hide() {
 		this.hidden = true;
 	}
 }
 
 @customElement("context-menu-item")
-class ContextMenuItem extends CBaseElement {
+class CContextMenuItem extends CBaseElement {
 	@property({ type: String }) icon = "";
 	@property({ type: String }) text = "";
 
-	render() {
+	override render() {
 		const { icon, text } = this;
 
 		return html`

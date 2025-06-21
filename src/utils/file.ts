@@ -22,44 +22,46 @@ const configDir =
 const userDirsFile = await IOUtils.readUTF8(
 	PathUtils.join(configDir, "user-dirs.dirs"),
 );
-const userDirs = userDirsFile
-	.split("\n")
-	.filter((e) => e && !e.startsWith("#"))
-	.map((e) => e.split("="))
-	.map(([envVar, path]) => ({
-		[envVar]: path.replace(/"/g, "").replace("$HOME", homeDir),
-	}))
-	.reduce((a, b) => Object.assign(a, b)) as Record<XDGBaseDirectory_t, string>;
+const userDirs = new Map<XDGBaseDirectory_t, string>(
+	userDirsFile
+		.split("\n")
+		.filter((e) => e && !e.startsWith("#"))
+		.map((e) => e.split("="))
+		.map(([envVar, path]) => [
+			envVar as XDGBaseDirectory_t,
+			path.replace(/"/g, "").replace("$HOME", homeDir),
+		]),
+);
 
-export const newFile = Components.Constructor(
+export const nsIFile = Components.Constructor(
 	"@mozilla.org/file/local;1",
 	"nsIFile",
 	"initWithPath",
 );
 
-export function getFileExtension(path: string) {
-	if (!path) {
+export function GetFileExtension(strPath: string) {
+	if (!strPath) {
 		return "";
 	}
 
-	const lastIndex = path.lastIndexOf(".");
-	return lastIndex !== -1 ? path.slice(lastIndex + 1).toLowerCase() : "";
+	const nLastIndex = strPath.lastIndexOf(".");
+	return nLastIndex !== -1 ? strPath.slice(nLastIndex + 1).toLowerCase() : "";
 }
 
-export function getPathForName(name: UserDir_t) {
-	switch (name) {
+export function GetPathForName(strName: UserDir_t) {
+	switch (strName) {
 		case "home":
 			return homeDir;
 		case "documents":
-			return userDirs.XDG_DOCUMENTS_DIR;
+			return userDirs.get("XDG_DOCUMENTS_DIR");
 		case "downloads":
-			return userDirs.XDG_DOWNLOAD_DIR;
+			return userDirs.get("XDG_DOWNLOAD_DIR");
 		case "music":
-			return userDirs.XDG_MUSIC_DIR;
+			return userDirs.get("XDG_MUSIC_DIR");
 		case "pictures":
-			return userDirs.XDG_PICTURES_DIR;
+			return userDirs.get("XDG_PICTURES_DIR");
 		case "videos":
-			return userDirs.XDG_VIDEOS_DIR;
+			return userDirs.get("XDG_VIDEOS_DIR");
 		default:
 			return "/";
 	}

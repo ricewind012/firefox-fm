@@ -3,12 +3,12 @@ import { customElement, property, query, state } from "lit/decorators.js";
 
 import { DownloadUtils } from "resource://gre/modules/DownloadUtils.sys.mjs";
 
-import type { ContextMenu } from "@/shared/components/contextmenu";
-import { FileActions } from "@/shared/fileactions";
+import type { CContextMenu } from "@/shared/components/contextmenu";
+import { CFileActions } from "@/shared/fileactions";
 import {
-	getFileExtension,
-	getPathForName,
-	newFile,
+	GetFileExtension,
+	GetPathForName,
+	nsIFile,
 	type UserDir_t,
 } from "@/utils/file";
 import { CBaseElement } from "@/utils/lit";
@@ -18,34 +18,26 @@ import { CBaseTab } from "./base";
 
 declare global {
 	interface HTMLElementTagNameMap {
-		"fm-file-row": FileRow;
-		"fm-path-part": PathPart;
-		"fm-path-header": PathHeader;
-		"fm-tab": DirTab;
+		"fm-file-row": CFileRow;
+		"fm-path-part": CPathPart;
+		"fm-path-header": CPathHeader;
+		"fm-tab": CDirTab;
 	}
 }
 
 @customElement("fm-file-row")
-class FileRow extends CBaseElement {
-	@query("context-menu", true) menu: ContextMenu;
+class CFileRow extends CBaseElement {
+	@query("context-menu", true) menu: CContextMenu;
 	@state() file: nsIFile = null;
 
 	m_bIsFile: boolean;
-	m_elPathHeader: PathHeader;
-	m_elTab: DirTab;
-	m_pActions: FileActions;
+	m_elPathHeader: CPathHeader;
+	m_elTab: CDirTab;
+	m_pActions: CFileActions;
 
-	connectedCallback() {
-		super.connectedCallback();
-		this.m_bIsFile = this.file.isFile();
-		this.m_elPathHeader = document.querySelector("fm-path-header");
-		this.m_elTab = this.closest("fm-tab-dirs") as unknown as DirTab;
-		this.m_pActions = new FileActions(this.file);
-	}
-
-	open() {
+	Open() {
 		if (this.m_bIsFile) {
-			this.m_pActions.open();
+			this.m_pActions.Open();
 		} else {
 			const { path } = this.file;
 			this.m_elPathHeader.path = path;
@@ -53,29 +45,37 @@ class FileRow extends CBaseElement {
 		}
 	}
 
-	onContextMenu(ev: ClickEvent) {
-		this.menu.show(ev);
+	OnContextMenu(ev: ClickEvent) {
+		this.menu.Show(ev);
 	}
 
-	contextMenuTemplate() {
+	ContextMenuTemplate() {
 		return html`
 			<context-menu>
-				<context-menu-item @click=${this.open}>Open</context-menu-item>
+				<context-menu-item @click=${this.Open}>Open</context-menu-item>
 				<context-menu-separator></context-menu-separator>
-				<context-menu-item @click=${this.m_pActions.delete}>
+				<context-menu-item @click=${this.m_pActions.Delete}>
 					Delete
 				</context-menu-item>
 			</context-menu>
 		`;
 	}
 
-	render() {
+	override connectedCallback() {
+		super.connectedCallback();
+		this.m_bIsFile = this.file.isFile();
+		this.m_elPathHeader = document.querySelector("fm-path-header");
+		this.m_elTab = this.closest("fm-tab-dirs") as unknown as CDirTab;
+		this.m_pActions = new CFileActions(this.file);
+	}
+
+	override render() {
 		const { displayName, fileSize, lastModifiedTime, path } = this.file;
 
 		const date = new Date(lastModifiedTime).toDateString();
 		const [bytes, unit] = DownloadUtils.convertByteUnits(fileSize);
 
-		const extension = getFileExtension(path);
+		const extension = GetFileExtension(path);
 		const icon = this.m_bIsFile
 			? html`
 					<img src="moz-icon://.${extension}?size=16}" />
@@ -86,8 +86,8 @@ class FileRow extends CBaseElement {
 
 		return html`
 			<fm-file-row-info-container
-				@contextmenu=${this.onContextMenu}
-				@dblclick=${this.open}
+				@contextmenu=${this.OnContextMenu}
+				@dblclick=${this.Open}
 			>
 				${icon}
 				<life-text>${displayName}</life-text>
@@ -100,19 +100,19 @@ class FileRow extends CBaseElement {
 						: ""}
 				</life-text>
 			</fm-file-row-info-container>
-			<life-icon-button @click=${this.onContextMenu}>
+			<life-icon-button @click=${this.OnContextMenu}>
 				<life-icon name="view-more-horizontal"></life-icon>
-				${this.contextMenuTemplate()}
+				${this.ContextMenuTemplate()}
 			</life-icon-button>
 		`;
 	}
 }
 
 @customElement("fm-path-part")
-class PathPart extends CBaseElement {
+class CPathPart extends CBaseElement {
 	@property({ type: String }) name = "";
 
-	render() {
+	override render() {
 		return html`
 			<life-text>${this.name}</life-text>
 		`;
@@ -120,17 +120,12 @@ class PathPart extends CBaseElement {
 }
 
 @customElement("fm-path-header")
-class PathHeader extends CBaseElement {
+class CPathHeader extends CBaseElement {
 	@property({ type: String }) path = "";
 
-	m_elSelectedTab: DirTab;
+	m_elSelectedTab: CDirTab;
 
-	connectedCallback() {
-		super.connectedCallback();
-		this.m_elSelectedTab = this.parentElement as unknown as DirTab;
-	}
-
-	getDirs() {
+	GetDirs() {
 		let { path } = this;
 		const dirs: { fileName: string; path: string }[] = [];
 
@@ -147,18 +142,23 @@ class PathHeader extends CBaseElement {
 		return dirs;
 	}
 
-	render() {
-		const dirs = this.getDirs();
+	override connectedCallback() {
+		super.connectedCallback();
+		this.m_elSelectedTab = this.parentElement as unknown as CDirTab;
+	}
+
+	override render() {
+		const dirs = this.GetDirs();
 
 		return html`
 			${dirs.map(({ path, fileName }) => {
-				function onClick() {
+				function OnClick() {
 					this.path = path;
 					this.m_elSelectedTab.ChangePath(path);
 				}
 
 				return html`
-					<fm-path-part .name=${fileName} @click=${onClick}></fm-path-part>
+					<fm-path-part .name=${fileName} @click=${OnClick}></fm-path-part>
 				`;
 			})}
 		`;
@@ -166,24 +166,24 @@ class PathHeader extends CBaseElement {
 }
 
 @customElement("fm-tab-dirs")
-export class DirTab extends CBaseTab {
+export class CDirTab extends CBaseTab {
 	@property({ type: String }) path = "";
-	@query("fm-path-header", true) m_elPathHeader: PathHeader;
+	@query("fm-path-header", true) m_elPathHeader: CPathHeader;
 	@state() m_vecFiles: nsIFile[];
 
-	connectedCallback() {
-		super.connectedCallback();
-		const path = getPathForName(this.name as UserDir_t);
-		this.ChangePath(path);
-	}
-
 	ChangePath(strPath: string) {
-		const pDir = newFile(strPath);
+		const pDir = nsIFile(strPath);
 		this.m_vecFiles = [...pDir.directoryEntries];
 		//this.m_elPathHeader.path = strPath;
 	}
 
-	render() {
+	override connectedCallback() {
+		super.connectedCallback();
+		const path = GetPathForName(this.name as UserDir_t);
+		this.ChangePath(path);
+	}
+
+	override render() {
 		return html`
 			${this.m_vecFiles.map(
 				(file) => html`
