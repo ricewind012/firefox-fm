@@ -4,12 +4,15 @@
 // @author       me
 // @include      main
 // ==/UserScript==
+
 import { Hotkeys, Utils } from "chrome://userchromejs/content/uc_api.sys.mjs";
 import { PanelMultiView } from "resource:///modules/PanelMultiView.sys.mjs";
 
-import type { App_t, ClickEvent } from "@/utils/types";
+import { APP_LIST } from "@/shared/consts";
+import type { ClickEvent } from "@/utils/types";
 
 declare global {
+	// biome-ignore lint/style/useNamingConvention: Firefox global
 	const MozXULElement: {
 		/**
 		 * @see https://github.com/mozilla/gecko-dev/blob/master/toolkit/content/customElements.js#L528
@@ -20,6 +23,7 @@ declare global {
 	/**
 	 * @see https://searchfox.org/mozilla-central/source/browser/base/content/browser.js#4672
 	 */
+	// biome-ignore lint/style/useNamingConvention: Firefox global
 	function switchToTabHavingURI(
 		aURI: nsIURI | string,
 		aOpenNew: boolean,
@@ -28,7 +32,6 @@ declare global {
 	): boolean;
 }
 
-const APP_LIST: App_t[] = ["fm"];
 const PANEL_ID = "life-panel";
 
 const registrar = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
@@ -39,8 +42,12 @@ const fphs = Cc["@mozilla.org/network/protocol;1?name=file"].getService(
 	Ci.nsIFileProtocolHandler,
 );
 
-function FindResources(app: App_t) {
-	const url = `chrome://userchrome/content/firefox-fm/src/apps/${app}/page/index.html`;
+/**
+ * This uses the exact same URL, see explanation
+ * [here]({@link ../apps/base/index.ts}) in the `app` variable.
+ */
+function FindResources() {
+	const url = "chrome://userchrome/content/firefox-fm/src/apps/base/index.html";
 	const uri = Services.io.newURI(url);
 	const fileUri = chromeRegistry.convertChromeURL(uri);
 	const file = fphs.getFileFromURLSpec(fileUri.spec).QueryInterface(Ci.nsIFile);
@@ -60,8 +67,8 @@ class CAboutLifeModule implements nsIAboutModule {
 	m_pURI: nsIURI;
 	m_strURL: string;
 
-	constructor(app: App_t) {
-		this.m_strURL = FindResources(app);
+	constructor() {
+		this.m_strURL = FindResources();
 		this.m_pURI = Services.io.newURI(this.m_strURL);
 	}
 
@@ -69,25 +76,28 @@ class CAboutLifeModule implements nsIAboutModule {
 		return ChromeUtils.generateQI(["nsIAboutModule"]);
 	}
 
+	// biome-ignore lint/style/useNamingConvention: Biome bug?
 	newChannel(_uri, loadInfo: nsILoadInfo) {
 		const ch = Services.io.newChannelFromURIWithLoadInfo(this.m_pURI, loadInfo);
 		ch.owner = Services.scriptSecurityManager.getSystemPrincipal();
 		return ch;
 	}
 
+	// biome-ignore lint/style/useNamingConvention: Biome bug?
 	getURIFlags(_uri) {
 		return (
 			Ci.nsIAboutModule.ALLOW_SCRIPT | Ci.nsIAboutModule.IS_SECURE_CHROME_UI
 		);
 	}
 
+	// biome-ignore lint/style/useNamingConvention: Biome bug?
 	getChromeURI(_uri) {
 		return this.m_pURI;
 	}
 }
 
 for (const app of APP_LIST) {
-	const aboutModule = new CAboutLifeModule(app);
+	const aboutModule = new CAboutLifeModule();
 	const aboutModuleFactory: nsIFactory = {
 		createInstance(aIID) {
 			return aboutModule.QueryInterface(aIID);

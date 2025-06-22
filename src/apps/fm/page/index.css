@@ -1,9 +1,5 @@
 @import url("../../../shared/basestyles.css");
 
-fm-app {
-	flex: 1;
-}
-
 fm-content {
 	--sidebar-shadow-size: var(--spacing-3x);
 

@@ -1,5 +1,5 @@
-@import url("./components/contextmenu.css");
-@import url("./components/shared.css");
+@import url("../../shared/components/contextmenu.css");
+@import url("../../shared/components/shared.css");
 
 :root {
 	--bg: Canvas;
@@ -29,4 +29,8 @@ body {
 	:where(:not([hidden])) {
 		display: flex;
 	}
+}
+
+life-app {
+	flex: 1;
 }

@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, render } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import "@/shared/components/contextmenu";
@@ -54,3 +54,10 @@ class CFMApp extends CBaseElement {
 		`;
 	}
 }
+
+render(
+	html`
+		<fm-app></fm-app>
+	`,
+	document.body,
+);
