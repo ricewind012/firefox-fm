@@ -9,9 +9,7 @@
 			"chrome://userchromejs/content/uc_api.sys.mjs": [
 				"./node_modules/@types/fx-autoconfig/index.d.ts"
 			],
-			"resource:///modules/PanelMultiView.sys.mjs": [
-				"./types/PanelMultiView.d.ts"
-			],
+			"resource:///modules/*": ["./types/*"],
 			"resource://gre/modules/*": ["./types/*"]
 		},
 		"target": "esnext",

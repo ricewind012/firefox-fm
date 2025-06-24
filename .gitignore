@@ -1,8 +1,5 @@
-about-life.uc.mjs
 dist
 dist_userscripts
-
 node_modules
-external_types
 package-lock.json
-*.tgz
+types

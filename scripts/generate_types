@@ -1,0 +1,81 @@
+#!/usr/bin/env node
+
+// Generates types for various Firefox source code files, so I won't have to
+// write and include them in the repo.
+//
+// TODO: When everything starts to use moz-src: leave only the file name in
+// IMPORTS var & remove importPaths & update Subprocess.sys.mjs includeInDecl
+
+import ts from "typescript";
+
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+
+/**
+ * @typedef {object} FxImportOptions
+ *   Sometimes needed to fix type conversion, i.e. normalize definitions.
+ *
+ * @property {[string | RegExp, string]} replace
+ *   Replace args for the Firefox source file.
+ *
+ * @property {string} includeInDecl
+ *   Text to include in the .d.mts file, i.e. missing imports.
+ */
+
+const BASE_URL =
+	"https://raw.githubusercontent.com/mozilla/gecko-dev/refs/heads/master";
+const TYPES_DIR = "types";
+const FX_SRC_FILES_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "gentypes"));
+/** @type {Record<string, FxImportOptions>} */
+const IMPORTS = {
+	"DownloadUtils.sys.mjs": {
+		replace: [/: function DU_\w+/g, ""],
+	},
+	"PanelMultiView.sys.mjs": {},
+	"Subprocess.sys.mjs": {
+		includeInDecl: `
+			import type { BaseProcess } from "resource://gre/modules/subprocess/subprocess_common.sys.mjs";
+
+			interface Process extends BaseProcess {}
+		`,
+	},
+	"subprocess_common.sys.mjs": {},
+};
+
+const download = async (url) => await (await fetch(url)).text();
+
+/** @type {ts.CompilerOptions} */
+const { paths } = JSON.parse(
+	await download(`${BASE_URL}/tools/%40types/generated/tspaths.json`),
+).compilerOptions;
+const importPaths = Object.keys(paths);
+
+fs.mkdirSync(TYPES_DIR, { recursive: true });
+for (const [importFileName, importFixes] of Object.entries(IMPORTS)) {
+	const importURL = importPaths.find((e) => e.endsWith(importFileName));
+	const [downloadURL] = paths[importURL];
+
+	const srcFilePath = path.join(FX_SRC_FILES_DIR, importFileName);
+	const importText = await download(`${BASE_URL}/${downloadURL}`);
+	fs.writeFileSync(
+		srcFilePath,
+		importText.replace(...(importFixes.replace || [])),
+	);
+
+	const program = ts.createProgram([srcFilePath], {
+		allowJs: true,
+		declaration: true,
+		emitDeclarationOnly: true,
+		skipLibCheck: true,
+	});
+	program.emit(undefined, (fileName, text) => {
+		const fileText = `${importFixes.includeInDecl || ""}
+
+declare module "${importURL}" {
+${text}
+}`;
+		fs.writeFileSync(path.join(TYPES_DIR, path.basename(fileName)), fileText);
+		console.log("Generated %o", importFileName);
+	});
+}

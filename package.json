@@ -18,6 +18,7 @@
 	"scripts": {
 		"build": "npx rollup -c",
 		"postinstall": "npx patch-package",
+		"prepare": "scripts/download_types && scripts/generate_types",
 		"watch": "npx rollup -cw"
 	},
 	"type": "module"
