@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"experimentalDecorators": true,
+		"jsx": "react-jsx",
 		"module": "esnext",
 		"moduleResolution": "node",
 		"outDir": "dist",
@@ -10,7 +11,8 @@
 				"./node_modules/@types/fx-autoconfig/index.d.ts"
 			],
 			"resource:///modules/*": ["./types/*"],
-			"resource://gre/modules/*": ["./types/*"]
+			"resource://gre/modules/*": ["./types/*"],
+			"resource://gre/modules/ctypes.sys.mjs": ["./ctypes_test/ctypes.d.mts"]
 		},
 		"target": "esnext",
 		"useDefineForClassFields": false

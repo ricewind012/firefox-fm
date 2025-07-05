@@ -1,0 +1,298 @@
+#!/usr/bin/env node
+
+// ~~worst~~ BEST .h -> .ts conversionator 9000
+
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
+
+/**
+ * @typedef {object} HeaderFunc
+ *   C function declaration.
+ *
+ * @property {Record<string, string>[]} args
+ *   [type, name] tuple.
+ * @property {string[]} docs
+ *   JSDoc block.
+ * @property {string} name
+ *   Function name.
+ * @property {string} ret
+ *   Function return type.
+ */
+
+/**
+ * @typedef {object} HeaderResult
+ *
+ * @property {string[]} defs
+ *   #define constants in the format of `declare const name = value`.
+ * @property {string[]} enums
+ *   Newline-separated content.
+ * @property {HeaderFunc[]} funcs
+ *   Function definition.
+ * @property {string[]} imports
+ *   Imports for types that *have* to be manually written (e.g. empty structs).
+ * @property {string[]} structs
+ *   Newline-separated content.
+ */
+
+const FILE_PATH = process.argv[2];
+const [, , , lib, fileName] = FILE_PATH.split("/");
+const TYPES_DIR = path.join("types", lib);
+
+// cut off the license to enjoy my 0.001s speed boost
+const FILE_START = 3;
+
+const FUNC_DEF_RE = new RegExp(`^(.*)(${lib}_\\w+)\\((.*)\\);$`);
+
+const POINTER_RE = /\*/g;
+
+/**
+ * Writes a TS def file to `types/{lib}/{name}.d.ts`.
+ *
+ * @param {string} content
+ */
+function WriteToFile(content) {
+	const name = fileName.replace(".h", ".d.ts");
+	fs.mkdirSync(TYPES_DIR, { recursive: true });
+	fs.writeFileSync(path.join(TYPES_DIR, name), content);
+}
+
+/**
+ * `static inline struct mpd_connection *` -> `mpd_connection`, essentially
+ * strip all C features that are useless in TypeScript.
+ *
+ * @param {string} s C type string.
+ */
+function CTypeToJSType(s) {
+	const stripped = s.replace(/(const|enum|inline|static|struct) /g, "");
+	const matches = stripped.match(POINTER_RE)?.length ?? 0;
+	let pointered = stripped;
+	for (let i = 0; i < matches; i++) {
+		pointered = `ptr<${pointered}>`;
+	}
+
+	return pointered.replace(POINTER_RE, "");
+}
+
+/**
+ * `const char *name` -> `name: char`, since both "char" and "char*" are
+ * strings.
+ *
+ * @param {string} s
+ * @returns a [type, name] tuple.
+ */
+function LineToTSType(s) {
+	return s
+		.replace(/(const|enum|struct) /g, "")
+		.split(/,\s+/)
+		.map((arg) => [...(arg.match(/(.* \*?)(\w+)/) || [])].slice(1));
+}
+
+/**
+ * @returns {HeaderResult}
+ */
+function ProcessHeaderFile() {
+	const text = fs
+		.readFileSync(FILE_PATH)
+		.toString()
+		.split("\n")
+		// strip everything unneeded
+		.filter(
+			(e) =>
+				// TODO: maybe this is a common pattern, so use ${lib} later?
+				!e.match(/^mpd_(unused|malloc|pure|const|sentinel)$/) &&
+				!e.match(/^#(else|endif|if|ifdef|ifndef|include)/) &&
+				!e.startsWith("//") &&
+				!e.startsWith("extern") &&
+				e !== "}",
+		);
+
+	const defs = [];
+	const enums = [];
+	const funcs = [];
+	const structs = [];
+	const imports = [];
+
+	let jsdocStartIdx = 0;
+
+	for (let i = FILE_START; i < text.length; i++) {
+		const prevLine = text[i - 1];
+		const line = text[i];
+		const nextLine = text[i + 1];
+
+		/**
+		 * Appends a JSDoc block to an array.
+		 *
+		 * @param {any[]} vec Array to append to.
+		 */
+		// biome-ignore lint/nursery/noNestedComponentDefinitions: this isn't react LMAO wtf
+		function AppendJSDoc(vec) {
+			if (jsdocStartIdx !== 0) {
+				while (text[jsdocStartIdx] !== " */") {
+					vec.push(text[jsdocStartIdx++]);
+				}
+				vec.push(" */");
+			}
+		}
+
+		if (line === "") {
+			continue;
+		}
+
+		if (line === "/**") {
+			jsdocStartIdx = i;
+			continue;
+		}
+
+		const lastChar = line.at(-1);
+
+		// #define
+		const defineMatch = line.match(/^#define (\w+) ([a-zA-Z0-9]+)$/);
+		if (line.startsWith("#define")) {
+			// macro
+			if (!defineMatch) {
+				continue;
+			}
+
+			// #define const
+			const [, name, value] = defineMatch;
+			defs.push(`declare const ${name} = ${value}`);
+			continue;
+		}
+
+		// ofc this skips "enum {" because it's invalid, these are most likely
+		// useless anyway
+		const enumStart = line.match(/^enum mpd_\w+/);
+		// inconsistent formatting, latter seen in tag.h
+		const enumOrStructEnding = lastChar === "{" || nextLine === "{";
+		// enum
+		if (enumStart && enumOrStructEnding) {
+			AppendJSDoc(enums);
+
+			enums.push(line.replace("enum", "export enum"));
+			let sepIdx = i + 1;
+			while (text[sepIdx] !== "};") {
+				enums.push(text[sepIdx++]);
+			}
+			enums.push("}", "");
+
+			// skip this part
+			i = sepIdx;
+			continue;
+		}
+
+		const structStart = line.match(/^struct (mpd_\w+)/);
+		// empty struct
+		if (structStart && lastChar === ";") {
+			//AppendJSDoc(types);
+
+			const name = structStart[1];
+			imports.push(name);
+			continue;
+		}
+
+		// struct
+		if (structStart && enumOrStructEnding) {
+			AppendJSDoc(structs);
+
+			structs.push(line.replace("struct", "export interface"));
+			let sepIdx = i + 1;
+			while (text[sepIdx] !== "};") {
+				const line = text[sepIdx];
+				if (line.at(-1) === ";") {
+					const varDecl = LineToTSType(line).map(
+						([type, name]) => `${name}: ${CTypeToJSType(type)}`,
+					);
+					structs.push(varDecl);
+				} else {
+					structs.push(line);
+				}
+				sepIdx++;
+			}
+			structs.push("}", "");
+
+			// skip this part
+			i = sepIdx;
+			continue;
+		}
+
+		// typedef
+		if (line.startsWith("typedef")) {
+			// TODO: what is this useful for? nothing in mpd XD
+			/*
+			const [, type, name] = line.split(/\s+/);
+			types.push(`type ${name} = ${type}`);
+			continue;
+			*/
+		}
+
+		// function def
+		if (prevLine === " */") {
+			const docs = [];
+			AppendJSDoc(docs);
+
+			// get the full function def
+			let funcDef = [];
+			let sepIdx = i - 1;
+			while (text[sepIdx++] !== "") {
+				funcDef.push(text[sepIdx]);
+			}
+			funcDef = funcDef
+				.filter((e) => e !== "{" && !e.match(/^\s+return/))
+				.join("")
+				.trim();
+			// fix the second cond in above Array.filter
+			if (funcDef.at(-1) !== ";") {
+				funcDef += ";";
+			}
+
+			// ...and break it down
+			const [, ret, name, allArgs] = funcDef.match(FUNC_DEF_RE) || [];
+			if (!allArgs) {
+				console.log("offendor: %s", funcDef);
+			}
+			const parsedArgs = LineToTSType(allArgs);
+			const args = allArgs === "void" ? [] : parsedArgs;
+
+			funcs.push({ args, docs, name, ret });
+		}
+	}
+
+	return { defs, enums, funcs, imports, structs };
+}
+
+// TODO: va_args & ...
+// TODO: merge mpd_fix_imports with this
+// TODO: declare module & generate ctypes code for this in a sep file
+function Main() {
+	const result = ProcessHeaderFile();
+
+	const defs = result.defs.join("\n");
+	const imports =
+		result.imports.length !== 0
+			? `import type { ${result.imports.join(", ")} } from "./${lib}";`
+			: "";
+	const enums = result.enums.join("\n");
+	const structs = result.structs.join("\n");
+	const funcs = result.funcs
+		.map((e) => {
+			const args = e.args
+				.map(([type, name]) => (!name ? "" : `${name}: ${CTypeToJSType(type)}`))
+				.join(", ");
+			const docs = e.docs.join("\n");
+			const ret = CTypeToJSType(e.ret).trim().replace(" ", "_");
+
+			return `${docs}\nexport declare function ${e.name}(${args}): ${ret}`;
+		})
+		.join("\n\n");
+
+	const content = [imports, defs, structs, enums, funcs].join("\n").trim();
+	if (content === "") {
+		console.log("Nothing to write for %o!", fileName);
+		return;
+	}
+
+	WriteToFile(content);
+}
+
+Main();

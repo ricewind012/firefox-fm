@@ -22,7 +22,9 @@
 		}
 	},
 	"linter": {
+		"includes": ["**", "!types/**"],
 		"rules": {
+			"a11y": "off",
 			"style": {
 				"noDescendingSpecificity": "off",
 				"useEnumInitializers": "off",
@@ -46,12 +48,6 @@
 								"formats": ["PascalCase"],
 								"selector": {
 									"kind": "enumMember"
-								}
-							},
-							{
-								"match": "C(.+)",
-								"selector": {
-									"kind": "class"
 								}
 							},
 							{
